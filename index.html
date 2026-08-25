@@ -239,7 +239,11 @@ function paintVotePicker(){
 }
 function render(){
   const counts=getCounts(),reveal=!!poll?.show_results||!!poll?.is_closed||isAdmin,max=Math.max(0,...Object.values(counts));
-  $('#summary').textContent=poll?.is_closed?`Голосование завершено · ${votes.length} голос(ов)`:`Всего отдано голосов: ${votes.length}`;
+  $('#summary').textContent = poll?.is_closed
+  ? `Голосование завершено · ${votes.length} голос(ов)`
+  : poll?.show_results
+    ? `Всего отдано голосов: ${votes.length}`
+    : 'Результаты пока скрыты ♡';
   $('#add-book-card').classList.toggle('hidden',!!poll?.is_closed);
   $('#voter-row').classList.toggle('hidden',!!poll?.is_closed);
   $('#close-poll').classList.toggle('hidden',!!poll?.is_closed);
