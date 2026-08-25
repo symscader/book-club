@@ -133,13 +133,22 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 
 <section class="card">
 <div class="top"><h2>Голосование 🩷</h2><span id="summary" class="status"></span></div>
-<div id="voter-row" class="grid2" style="margin-bottom:14px">
+<div id="voter-row" style="margin-bottom:14px">
+<div class="grid2">
 <input id="voter" maxlength="50" placeholder="Твоё имя / ник">
-<button id="refresh" class="soft" type="button">Обновить</button>
+<button id="load-my-votes" class="soft" type="button">Мои голоса</button>
+</div>
+<div class="top" style="margin-top:10px">
+<span id="vote-picker-status" class="status">Выбрано: 0 из 2</span>
+<div class="adminbar">
+<button id="clear-selection" class="ghost" type="button">Сбросить выбор</button>
+<button id="save-votes" class="primary" type="button">Сохранить голоса</button>
+</div>
+</div>
 </div>
 <div id="books" class="books"><div class="empty">Загружаю книги…</div></div>
 <div id="vote-notice" class="notice"></div>
-<p class="tiny">Один человек = один голос. Повторный голос под тем же именем просто меняет выбор.</p>
+<p class="tiny">У каждой участницы до 2 голосов за разные книги. За свою книгу голосовать нельзя; выбор можно менять до закрытия.</p>
 </section>
 
 <section class="card">
@@ -171,7 +180,7 @@ const personKey=s=>clean(s).toLocaleLowerCase('ru-RU');
 const cfg=window.BOOK_CLUB_CONFIG||{};
 if(!cfg.supabaseUrl||!cfg.supabaseAnonKey){$('#books').innerHTML='<div class="empty">Не заполнен config.js</div>';return}
 const db=supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
-let poll=null,books=[],votes=[],isAdmin=false,session=null,historyPolls=[];
+let poll=null,books=[],votes=[],isAdmin=false,session=null,historyPolls=[],selectedVotes=new Set();
 
 async function checkAdmin(){
   const {data:{session:s}}=await db.auth.getSession();
@@ -216,9 +225,21 @@ async function load(){
   books=b||[];votes=v||[];
   render();renderHistory()
 }
+function syncSelectionFromVotes(){
+  const voter=clean($('#voter').value);
+  selectedVotes=new Set();
+  if(!voter)return;
+  const key=personKey(voter);
+  votes.filter(v=>v.voter_key===key).forEach(v=>selectedVotes.add(v.book_id));
+  paintVotePicker()
+}
+function paintVotePicker(){
+  const el=$('#vote-picker-status');
+  if(el)el.textContent=`Выбрано: ${selectedVotes.size} из 2`;
+}
 function render(){
   const counts=getCounts(),reveal=!!poll?.show_results||!!poll?.is_closed||isAdmin,max=Math.max(0,...Object.values(counts));
-  $('#summary').textContent=poll?.is_closed?`Голосование завершено · ${votes.length} голос(ов)`:`Проголосовали: ${votes.length}`;
+  $('#summary').textContent=poll?.is_closed?`Голосование завершено · ${votes.length} голос(ов)`:`Всего отдано голосов: ${votes.length}`;
   $('#add-book-card').classList.toggle('hidden',!!poll?.is_closed);
   $('#voter-row').classList.toggle('hidden',!!poll?.is_closed);
   $('#close-poll').classList.toggle('hidden',!!poll?.is_closed);
@@ -233,23 +254,51 @@ function render(){
     $('#winner-votes').textContent=`Победила с ${counts[winner.id]||0} голос(ами) 🩷`;
   }
 
-  if(!books.length){$('#books').innerHTML='<div class="empty">Пока ни одной книги. Кто будет первой? 👀</div>';paintTie();return}
+  if(!books.length){$('#books').innerHTML='<div class="empty">Пока ни одной книги. Кто будет первой? 👀</div>';paintTie();paintVotePicker();return}
   $('#books').innerHTML='';
+  const voterKey=personKey($('#voter').value);
   books.forEach(b=>{
+    const ownBook=!!voterKey && !!b.proposer_key && b.proposer_key===voterKey;
+    const chosen=selectedVotes.has(b.id);
     const row=document.createElement('div');
     row.className='book'+((winner&&winner.id===b.id)||(reveal&&!winner&&max>0&&counts[b.id]===max)?' winner':'');
     const info=document.createElement('div'),t=document.createElement('div'),m=document.createElement('div');
     t.className='book-title';t.textContent=(winner&&winner.id===b.id?'👑 ':'')+b.title;
-    m.className='meta';m.textContent=[b.author,b.proposer?'предложила: '+b.proposer:''].filter(Boolean).join(' · ')||'Без дополнительных данных';
+    m.className='meta';
+    const metaBits=[b.author,b.proposer?'предложила: '+b.proposer:''];
+    if(ownBook)metaBits.push('твоя заявка — голосовать нельзя');
+    m.textContent=metaBits.filter(Boolean).join(' · ')||'Без дополнительных данных';
     info.append(t,m);
+
     const side=document.createElement('div');side.className='vote';
     const c=document.createElement('span');c.className='count';c.textContent=reveal?counts[b.id]:'♡';
-    const btn=document.createElement('button');btn.type='button';btn.className='soft';btn.textContent=poll?.is_closed?'Завершено':'Голосую';btn.disabled=!!poll?.is_closed;btn.addEventListener('click',()=>voteFor(b.id));
+    const btn=document.createElement('button');btn.type='button';
+    btn.className=chosen?'primary':'soft';
+    btn.textContent=poll?.is_closed?'Завершено':(chosen?'Выбрано ✓':'Выбрать');
+    btn.disabled=!!poll?.is_closed || ownBook;
+    btn.addEventListener('click',()=>toggleVoteChoice(b.id,ownBook));
     side.append(c,btn);
-    if(isAdmin&&!poll?.is_closed){const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Удалить';del.addEventListener('click',()=>deleteBook(b.id,b.title));side.append(del)}
+
+    if(isAdmin&&!poll?.is_closed){
+      const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Удалить';
+      del.addEventListener('click',()=>deleteBook(b.id,b.title));side.append(del)
+    }
     row.append(info,side);$('#books').append(row)
   });
-  paintTie()
+  paintVotePicker();paintTie()
+}
+function toggleVoteChoice(bookId,ownBook){
+  if(!poll||poll.is_closed||ownBook)return;
+  if(selectedVotes.has(bookId)){selectedVotes.delete(bookId)}
+  else{
+    if(selectedVotes.size>=2){
+      $('#vote-notice').textContent='Можно выбрать максимум две книги ♡';
+      return
+    }
+    selectedVotes.add(bookId)
+  }
+  $('#vote-notice').textContent='';
+  render()
 }
 function paintTie(){
   const box=$('#tie-box');box.innerHTML='';
@@ -279,15 +328,46 @@ async function renderHistory(){
     info.append(title,meta);row.append(month,info);$('#history').append(row)
   })
 }
-async function voteFor(bookId){
+
+$('#load-my-votes').addEventListener('click',()=>{
+  const voter=clean($('#voter').value);
+  if(!voter){$('#vote-notice').textContent='Сначала напиши своё имя или ник ♡';$('#voter').focus();return}
+  syncSelectionFromVotes();
+  $('#vote-notice').textContent=selectedVotes.size?`Твои текущие голоса загружены: ${selectedVotes.size}.`:'У тебя пока нет сохранённых голосов.';
+  render()
+});
+$('#clear-selection').addEventListener('click',()=>{
+  selectedVotes.clear();$('#vote-notice').textContent='Выбор очищен. Нажми «Сохранить голоса», чтобы применить.';render()
+});
+$('#save-votes').addEventListener('click',async()=>{
   if(!poll||poll.is_closed)return;
-  const voter=clean($('#voter').value);if(!voter){$('#vote-notice').textContent='Сначала напиши своё имя или ник ♡';return}
-  const key=voter.toLowerCase(),existing=votes.find(v=>v.voter_key===key);let res;
-  if(existing)res=await db.from('votes').update({book_id:bookId,voter_name:voter}).eq('id',existing.id);
-  else res=await db.from('votes').insert({poll_id:poll.id,book_id:bookId,voter_name:voter,voter_key:key});
-  $('#vote-notice').textContent=res.error?'Не получилось сохранить голос: '+res.error.message:'Голос сохранён 🩷';
-  if(!res.error)await load()
-}
+  const voter=clean($('#voter').value);
+  if(!voter){$('#vote-notice').textContent='Сначала напиши своё имя или ник ♡';$('#voter').focus();return}
+  const chosen=[...selectedVotes];
+  if(chosen.length===0){$('#vote-notice').textContent='Выбери хотя бы одну книгу ♡';return}
+  if(chosen.length>2){$('#vote-notice').textContent='Можно выбрать максимум две книги.';return}
+
+  const {error}=await db.rpc('cast_book_club_votes',{
+    p_poll_id:poll.id,
+    p_voter_name:voter,
+    p_book_ids:chosen
+  });
+
+  if(error){
+    const msg=String(error.message||'');
+    if(msg.includes('OWN_BOOK')) $('#vote-notice').textContent='За свою книгу голосовать нельзя ♡';
+    else if(msg.includes('MAX_TWO')) $('#vote-notice').textContent='Можно выбрать максимум две книги.';
+    else if(msg.includes('POLL_CLOSED')) $('#vote-notice').textContent='Голосование уже закрыто.';
+    else $('#vote-notice').textContent='Не получилось сохранить голоса: '+msg;
+    return
+  }
+  $('#vote-notice').textContent=`Голоса сохранены 🩷 (${chosen.length} из 2)`;
+  await load();syncSelectionFromVotes();render()
+});
+$('#voter').addEventListener('input',()=>{
+  selectedVotes.clear();paintVotePicker();render()
+});
+
 $('#book-form').addEventListener('submit',async e=>{
   e.preventDefault();if(!poll||poll.is_closed)return;
   const title=clean($('#title').value),author=clean($('#author').value),proposer=clean($('#proposer').value);
@@ -362,7 +442,7 @@ $('#send-link').addEventListener('click',async()=>{
   $('#login-notice').textContent=error?'Ошибка: '+error.message:'Ссылка отправлена. Открой письмо на этом же устройстве ♡'
 });
 $('#admin-logout').addEventListener('click',async()=>{await db.auth.signOut();session=null;isAdmin=false;paintAdmin();await load()});
-$('#refresh').addEventListener('click',load);
+
 db.auth.onAuthStateChange(async()=>{await checkAdmin();await load()});
 (async()=>{await checkAdmin();await load()})();
 })();
