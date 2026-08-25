@@ -216,7 +216,13 @@ async function load(){
     $('#add-book-card').classList.add('hidden');
     renderHistory();return
   }
+  const previousPollId = poll?.id;
   poll=polls[0];$('#poll-label').textContent=poll.title||'Текущий месяц';
+  if(previousPollId && previousPollId !== poll.id){
+  selectedVotes.clear();
+  $('#vote-notice').textContent='';
+  paintVotePicker();
+}
   const [{data:b,error:be},{data:v,error:ve}]=await Promise.all([
     db.from('books').select('*').eq('poll_id',poll.id).order('created_at'),
     db.from('votes').select('*').eq('poll_id',poll.id)
