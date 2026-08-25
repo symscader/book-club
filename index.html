@@ -423,10 +423,27 @@ $('#toggle-results').addEventListener('click',async()=>{
   $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Настройка результатов изменена.';await load()
 });
 $('#delete-votes').addEventListener('click',async()=>{
-  if(!isAdmin||!poll||poll.is_closed){$('#admin-notice').textContent='Сначала верни голосование, если хочешь обнулить голоса.';return}
-  if(!confirm('Точно удалить ВСЕ голоса текущего месяца?'))return;
+  if(!isAdmin||!poll||poll.is_closed){
+    $('#admin-notice').textContent='Сначала верни голосование, если хочешь обнулить голоса.';
+    return;
+  }
+
+  if(!confirm('Обнулить все голоса текущего месяца? Это действие нельзя отменить.'))return;
+
   const {error}=await db.from('votes').delete().eq('poll_id',poll.id);
-  $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Все голоса текущего месяца удалены.';await load()
+
+  if(error){
+    $('#admin-notice').textContent='Ошибка: '+error.message;
+    return;
+  }
+
+  selectedVotes.clear();
+  $('#vote-notice').textContent='';
+  $('#admin-notice').textContent='Все голоса текущего месяца удалены.';
+
+  await load();
+  paintVotePicker();
+  render();
 });
 $('#create-poll').addEventListener('click',async()=>{
   if(!isAdmin)return;
