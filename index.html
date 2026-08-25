@@ -1,225 +1,359 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#f8dfe6" />
-  <title>Книга месяца ♡</title>
-  <style>
-    :root{
-      --bg:#fff8f5; --card:#fffdfb; --text:#49373d; --muted:#846d74;
-      --line:#ead8dc; --pink:#c96e83; --pink2:#f5dce3; --sand:#f4d8b9;
-      --sea:#b9dce0; --shadow:0 16px 42px rgba(102,71,80,.10);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh; color:var(--text); background:
-      radial-gradient(circle at 10% 10%, #fce7ed 0 13%, transparent 14%),
-      radial-gradient(circle at 90% 0%, #dff1f0 0 14%, transparent 15%),
-      linear-gradient(180deg,#fffaf7,#fff5f4);
-      font-family:Inter,ui-rounded,"Segoe UI",system-ui,sans-serif;
-    }
-    button,input{font:inherit}
-    .wrap{max-width:900px;margin:auto;padding:24px 16px 50px}
-    .hero{padding:26px 4px 18px;text-align:center}
-    h1{margin:0;font:700 clamp(34px,8vw,58px)/1 Georgia,serif;color:#b85e75}
-    .sub{max-width:620px;margin:12px auto 0;color:var(--muted);line-height:1.55}
-    .pill{display:inline-block;margin-top:14px;padding:8px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);font-weight:700;font-size:14px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;margin-top:16px;box-shadow:var(--shadow)}
-    .card h2{margin:0 0 14px;font-size:19px}
-    .grid{display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:9px}
-    input{width:100%;min-height:46px;border:1px solid #dfcbd1;border-radius:14px;padding:11px 13px;background:#fff;color:var(--text);font-size:16px;outline:none}
-    input:focus{border-color:#c96e83;box-shadow:0 0 0 3px #f7e3e8}
-    button{min-height:46px;border:0;border-radius:14px;padding:10px 16px;font-weight:800;cursor:pointer}
-    .primary{background:var(--pink);color:white}
-    .soft{background:var(--pink2);color:#8f4e60}
-    .books{display:grid;gap:11px}
-    .book{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:18px;padding:14px;background:#fffaf8}
-    .book.winner{outline:2px solid #d5966f;background:#fff6e9}
-    .book-title{font-weight:900;font-size:17px}
-    .meta{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.4}
-    .vote{display:flex;align-items:center;gap:8px}
-    .count{min-width:32px;text-align:center;font-weight:900;font-size:20px}
-    .status{color:var(--muted);font-size:14px;line-height:1.45}
-    .top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-    .notice{min-height:22px;margin-top:10px;color:#a95369;font-size:14px}
-    .empty{text-align:center;color:var(--muted);padding:24px 8px}
-    .tiny{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.45}
-    .heart{font-size:18px}
-    .loader{padding:25px;text-align:center;color:var(--muted)}
-    @media(max-width:720px){
-      .grid{grid-template-columns:1fr}.book{grid-template-columns:1fr}.vote{justify-content:space-between}
-      .card{padding:15px;border-radius:20px}.wrap{padding-inline:12px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6dfe5">
+<title>Книга месяца ♡</title>
+<style>
+:root{
+  --card:#fffdfb;--text:#49373d;--muted:#846d74;--line:#ead8dc;
+  --pink:#c96e83;--pink2:#f5dce3;--rose:#b75a72;--sand:#fff3e5;
+  --mint:#e8f3ef;--danger:#a5465f;--shadow:0 16px 42px rgba(102,71,80,.10)
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;color:var(--text);
+  background:
+    radial-gradient(circle at 8% 5%,#fce6ed 0 12%,transparent 13%),
+    radial-gradient(circle at 92% 1%,#dff1f0 0 13%,transparent 14%),
+    linear-gradient(180deg,#fffaf7,#fff5f4);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif
+}
+button,input{font:inherit}
+.wrap{max-width:920px;margin:auto;padding:24px 16px 58px}
+.hero{text-align:center;padding:24px 4px 14px}
+h1{margin:0;font:700 clamp(36px,8vw,60px)/1 Georgia,serif;color:#b85e75}
+.sub{max-width:680px;margin:12px auto 0;color:var(--muted);line-height:1.55}
+.hero-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pill{min-height:42px;border-radius:999px;border:1px solid var(--line);background:#fff;padding:9px 14px;font-weight:800;color:var(--text)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;margin-top:16px;box-shadow:var(--shadow)}
+.card h2{margin:0 0 14px;font-size:20px}
+.grid{display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:9px}
+.grid2{display:grid;grid-template-columns:1fr auto;gap:9px}
+input{width:100%;min-height:46px;border:1px solid #dfcbd1;border-radius:14px;padding:11px 13px;background:#fff;color:var(--text);font-size:16px;outline:none}
+input:focus{border-color:#c96e83;box-shadow:0 0 0 3px #f7e3e8}
+button{min-height:46px;border:0;border-radius:14px;padding:10px 16px;font-weight:800;cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.6}
+.primary{background:var(--pink);color:#fff}
+.soft{background:var(--pink2);color:#8f4e60}
+.ghost{background:#fff;border:1px solid var(--line);color:var(--text)}
+.danger{background:#f8e1e7;color:var(--danger)}
+.books{display:grid;gap:11px}
+.book{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:18px;padding:14px;background:#fffaf8}
+.book.winner{outline:2px solid #d5966f;background:var(--sand)}
+.book-title{font-weight:900;font-size:17px}
+.meta{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.4}
+.vote{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.count{min-width:32px;text-align:center;font-weight:900;font-size:20px}
+.status{color:var(--muted);font-size:14px}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.notice{min-height:22px;margin-top:10px;color:#a95369;font-size:14px}
+.empty{text-align:center;color:var(--muted);padding:24px 8px}
+.tiny{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.45}
+.hidden{display:none!important}
+.admin{border:2px dashed #dcb0ba;background:#fff9fb}
+.adminbar{display:flex;gap:8px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;min-height:34px;padding:6px 10px;border-radius:999px;background:#f7e6eb;color:#914f60;font-size:13px;font-weight:800}
+.winner-banner{border:2px solid #ddae82;background:linear-gradient(135deg,#fff7e9,#fffdfb);border-radius:22px;padding:18px;margin-top:16px;text-align:center}
+.winner-banner .crown{font-size:32px}
+.winner-banner h3{font:700 27px/1.15 Georgia,serif;margin:6px 0;color:#9c5b43}
+.winner-banner p{margin:6px 0;color:var(--muted)}
+.tie{background:#fff8fb;border:1px solid #e9ccd5;border-radius:18px;padding:14px;margin-top:12px}
+.tie h3{margin:0 0 8px}
+.tie-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.history{display:grid;gap:10px}
+.history-item{display:grid;grid-template-columns:130px minmax(0,1fr);gap:12px;padding:14px;border-radius:18px;background:#fffaf8;border:1px solid var(--line)}
+.history-month{font-weight:900;color:#a35469}
+.history-title{font-weight:900}
+.history-meta{font-size:13px;color:var(--muted);margin-top:4px}
+dialog{border:1px solid var(--line);border-radius:22px;padding:0;max-width:460px;width:calc(100% - 28px);color:var(--text);box-shadow:0 24px 80px rgba(50,30,37,.22)}
+dialog::backdrop{background:rgba(38,25,30,.35)}
+.modal{padding:20px}.modal h3{margin:0 0 8px}.modal p{color:var(--muted);line-height:1.5}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+@media(max-width:720px){
+  .grid,.grid2{grid-template-columns:1fr}.book{grid-template-columns:1fr}.vote{justify-content:space-between}
+  .card{padding:15px;border-radius:20px}.wrap{padding-inline:12px}.history-item{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="hero">
-      <h1>Книга месяца ♡</h1>
-      <p class="sub">Добавляем кандидатов, выбираем имя и голосуем за то, что будем читать вместе.</p>
-      <div class="pill" id="poll-label">Загружаю голосование…</div>
-    </section>
+<main class="wrap">
+<section class="hero">
+<h1>Книга месяца ♡</h1>
+<p class="sub">Добавляем кандидатов, голосуем и каждый месяц выбираем одну историю, которую читаем вместе.</p>
+<div class="hero-actions">
+<button class="pill" id="poll-label" type="button" disabled>Загружаю голосование…</button>
+<button class="pill" id="admin-login" type="button">Админ ♡</button>
+<button class="pill hidden" id="admin-logout" type="button">Выйти из админки</button>
+</div>
+</section>
 
-    <section class="card">
-      <h2>Добавить книгу 📚</h2>
-      <form id="book-form" class="grid">
-        <input id="title" required maxlength="100" placeholder="Название книги" />
-        <input id="author" maxlength="80" placeholder="Автор" />
-        <input id="proposer" maxlength="50" placeholder="Кто предложил" />
-        <button class="primary" type="submit">Добавить</button>
-      </form>
-      <div id="book-notice" class="notice" aria-live="polite"></div>
-    </section>
+<section id="winner-banner" class="winner-banner hidden">
+<div class="crown">👑</div>
+<div class="status">Книга месяца выбрана!</div>
+<h3 id="winner-title"></h3>
+<p id="winner-author"></p>
+<p id="winner-votes"></p>
+</section>
 
-    <section class="card">
-      <div class="top">
-        <h2>Голосование 🩷</h2>
-        <span id="summary" class="status"></span>
-      </div>
-      <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;margin-bottom:14px">
-        <input id="voter" maxlength="50" placeholder="Твоё имя / ник" />
-        <button id="refresh" class="soft" type="button">Обновить</button>
-      </div>
-      <div id="books" class="books"><div class="loader">Загружаю книги…</div></div>
-      <div id="vote-notice" class="notice" aria-live="polite"></div>
-      <p class="tiny">Один человек = один голос. Если проголосовать повторно под тем же именем, выбор изменится.</p>
-    </section>
-  </main>
+<section id="admin-panel" class="card admin hidden">
+<div class="top"><h2>Админка 👑</h2><span class="tag">режим хозяйки клуба</span></div>
 
-  <script src="./config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-  (() => {
-    const $ = s => document.querySelector(s);
-    const clean = s => String(s || '').trim().replace(/\s+/g,' ');
-    const cfg = window.BOOK_CLUB_CONFIG || {};
-    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey || cfg.supabaseUrl.includes('ВСТАВЬ')) {
-      $('#books').innerHTML = '<div class="empty">Сначала заполни <b>config.js</b> данными Supabase ♡</div>';
-      $('#poll-label').textContent = 'Нужна настройка Supabase';
-      return;
-    }
+<div id="admin-current">
+  <div class="adminbar">
+    <button id="close-poll" class="primary" type="button">Закрыть и выбрать победителя</button>
+    <button id="reopen-poll" class="soft hidden" type="button">Вернуть голосование</button>
+    <button id="toggle-results" class="soft" type="button">Показать результаты</button>
+    <button id="delete-votes" class="danger" type="button">Обнулить голоса</button>
+  </div>
+  <div id="tie-box" class="tie hidden"></div>
+</div>
 
-    const db = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-    let poll = null, books = [], votes = [];
+<hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
 
-    async function load() {
-      $('#books').innerHTML = '<div class="loader">Обновляю…</div>';
+<div class="grid2">
+<input id="new-poll-title" maxlength="80" placeholder="Например: Октябрь 2026 ♡">
+<button id="create-poll" class="primary" type="button">Новый месяц</button>
+</div>
+<p class="tiny">Новый месяц можно создать только после завершения текущего.</p>
+<div id="admin-notice" class="notice"></div>
+</section>
 
-      const { data: polls, error: pe } = await db
-        .from('polls')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending:false })
-        .limit(1);
+<section id="add-book-card" class="card">
+<h2>Добавить книгу 📚</h2>
+<form id="book-form" class="grid">
+<input id="title" required maxlength="100" placeholder="Название книги">
+<input id="author" maxlength="80" placeholder="Автор">
+<input id="proposer" maxlength="50" placeholder="Кто предложил">
+<button class="primary" type="submit">Добавить</button>
+</form>
+<div id="book-notice" class="notice"></div>
+</section>
 
-      if (pe || !polls || !polls.length) {
-        $('#poll-label').textContent = 'Нет активного голосования';
-        $('#books').innerHTML = '<div class="empty">Создай активный месяц в таблице <b>polls</b>.</div>';
-        return;
-      }
-      poll = polls[0];
-      $('#poll-label').textContent = poll.title || 'Текущий выбор';
+<section class="card">
+<div class="top"><h2>Голосование 🩷</h2><span id="summary" class="status"></span></div>
+<div id="voter-row" class="grid2" style="margin-bottom:14px">
+<input id="voter" maxlength="50" placeholder="Твоё имя / ник">
+<button id="refresh" class="soft" type="button">Обновить</button>
+</div>
+<div id="books" class="books"><div class="empty">Загружаю книги…</div></div>
+<div id="vote-notice" class="notice"></div>
+<p class="tiny">Один человек = один голос. Повторный голос под тем же именем просто меняет выбор.</p>
+</section>
 
-      const [{data:b, error:be},{data:v,error:ve}] = await Promise.all([
-        db.from('books').select('*').eq('poll_id',poll.id).order('created_at'),
-        db.from('votes').select('*').eq('poll_id',poll.id)
-      ]);
-      if (be || ve) {
-        $('#books').innerHTML = '<div class="empty">Не удалось загрузить данные. Проверь политики доступа в Supabase.</div>';
-        return;
-      }
-      books = b || []; votes = v || [];
-      render();
-    }
+<section class="card">
+<div class="top"><h2>Наша книжная полка 📖</h2><span class="status">прошлые победители</span></div>
+<div id="history" class="history"><div class="empty">Пока история только начинается ♡</div></div>
+</section>
+</main>
 
-    function render() {
-      const counts = {};
-      books.forEach(b => counts[b.id] = 0);
-      votes.forEach(v => { if (counts[v.book_id] !== undefined) counts[v.book_id]++; });
-      const max = Math.max(0, ...Object.values(counts));
-      $('#summary').textContent = votes.length ? `Проголосовали: ${votes.length}` : 'Пока без голосов';
+<dialog id="admin-dialog">
+<div class="modal">
+<h3>Вход администратора 👑</h3>
+<p>Введи свою почту. Supabase пришлёт одноразовую ссылку для входа.</p>
+<input id="admin-email" type="email" autocomplete="email" placeholder="Твоя почта">
+<div id="login-notice" class="notice"></div>
+<div class="modal-actions">
+<button id="close-dialog" class="ghost" type="button">Отмена</button>
+<button id="send-link" class="primary" type="button">Прислать ссылку</button>
+</div>
+</div>
+</dialog>
 
-      if (!books.length) {
-        $('#books').innerHTML = '<div class="empty">Пока ни одной книги. Кто будет первой? 👀</div>';
-        return;
-      }
+<script src="./config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+const $=s=>document.querySelector(s);
+const clean=s=>String(s||'').trim().replace(/\s+/g,' ');
+const cfg=window.BOOK_CLUB_CONFIG||{};
+if(!cfg.supabaseUrl||!cfg.supabaseAnonKey){$('#books').innerHTML='<div class="empty">Не заполнен config.js</div>';return}
+const db=supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+let poll=null,books=[],votes=[],isAdmin=false,session=null,historyPolls=[];
 
-      $('#books').innerHTML = '';
-      books.forEach(b => {
-        const row = document.createElement('div');
-        row.className = 'book' + (max > 0 && counts[b.id] === max ? ' winner' : '');
+async function checkAdmin(){
+  const {data:{session:s}}=await db.auth.getSession();
+  session=s;
+  if(!session){isAdmin=false;paintAdmin();return}
+  const {data,error}=await db.from('admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+  isAdmin=!!data&&!error;paintAdmin()
+}
+function paintAdmin(){
+  $('#admin-panel').classList.toggle('hidden',!isAdmin);
+  $('#admin-login').classList.toggle('hidden',!!session);
+  $('#admin-logout').classList.toggle('hidden',!session);
+  $('#admin-logout').textContent=session&&!isAdmin?'Выйти (нет прав админа)':'Выйти из админки'
+}
+function getCounts(){
+  const counts={};books.forEach(b=>counts[b.id]=0);votes.forEach(v=>{if(counts[v.book_id]!==undefined)counts[v.book_id]++});return counts
+}
+function leaders(){
+  const counts=getCounts(),max=Math.max(0,...Object.values(counts));
+  if(max===0)return {max:0,items:[]};
+  return {max,items:books.filter(b=>counts[b.id]===max)}
+}
+async function load(){
+  const [{data:polls,error:pe},{data:closed,error:he}]=await Promise.all([
+    db.from('polls').select('*').eq('is_active',true).order('created_at',{ascending:false}).limit(1),
+    db.from('polls').select('*').eq('is_closed',true).not('winner_book_id','is',null).order('closed_at',{ascending:false}).limit(24)
+  ]);
+  historyPolls=closed||[];
+  if(pe||!polls?.length){
+    poll=null;books=[];votes=[];
+    $('#poll-label').textContent='Нет активного голосования';
+    $('#books').innerHTML='<div class="empty">Сейчас нет активного месяца.</div>';
+    $('#add-book-card').classList.add('hidden');
+    renderHistory();return
+  }
+  poll=polls[0];$('#poll-label').textContent=poll.title||'Текущий месяц';
+  const [{data:b,error:be},{data:v,error:ve}]=await Promise.all([
+    db.from('books').select('*').eq('poll_id',poll.id).order('created_at'),
+    db.from('votes').select('*').eq('poll_id',poll.id)
+  ]);
+  if(be||ve){$('#books').innerHTML='<div class="empty">Ошибка загрузки данных.</div>';return}
+  books=b||[];votes=v||[];
+  render();renderHistory()
+}
+function render(){
+  const counts=getCounts(),reveal=!!poll?.show_results||!!poll?.is_closed||isAdmin,max=Math.max(0,...Object.values(counts));
+  $('#summary').textContent=poll?.is_closed?`Голосование завершено · ${votes.length} голос(ов)`:`Проголосовали: ${votes.length}`;
+  $('#add-book-card').classList.toggle('hidden',!!poll?.is_closed);
+  $('#voter-row').classList.toggle('hidden',!!poll?.is_closed);
+  $('#close-poll').classList.toggle('hidden',!!poll?.is_closed);
+  $('#reopen-poll').classList.toggle('hidden',!poll?.is_closed);
+  $('#toggle-results').textContent=poll?.show_results?'Скрыть результаты':'Показать результаты';
 
-        const info = document.createElement('div');
-        const t = document.createElement('div');
-        t.className = 'book-title';
-        t.textContent = (max > 0 && counts[b.id] === max ? '👑 ' : '') + b.title;
-        const m = document.createElement('div');
-        m.className = 'meta';
-        const bits = [];
-        if (b.author) bits.push(b.author);
-        if (b.proposer) bits.push('предложила: ' + b.proposer);
-        m.textContent = bits.join(' · ') || 'Без дополнительных данных';
-        info.append(t,m);
+  const winner=books.find(b=>b.id===poll?.winner_book_id);
+  $('#winner-banner').classList.toggle('hidden',!winner);
+  if(winner){
+    $('#winner-title').textContent='«'+winner.title+'»';
+    $('#winner-author').textContent=winner.author||'';
+    $('#winner-votes').textContent=`Победила с ${counts[winner.id]||0} голос(ами) 🩷`;
+  }
 
-        const side = document.createElement('div');
-        side.className = 'vote';
-        const c = document.createElement('span');
-        c.className = 'count';
-        c.textContent = counts[b.id];
-        const btn = document.createElement('button');
-        btn.className = 'soft';
-        btn.type = 'button';
-        btn.textContent = 'Голосую';
-        btn.addEventListener('click', () => voteFor(b.id));
-        side.append(c,btn);
-
-        row.append(info,side);
-        $('#books').append(row);
-      });
-    }
-
-    async function voteFor(bookId) {
-      if (!poll) return;
-      const voter = clean($('#voter').value);
-      if (!voter) {
-        $('#vote-notice').textContent = 'Сначала напиши своё имя или ник ♡';
-        $('#voter').focus();
-        return;
-      }
-      const existing = votes.find(v => v.voter_key === voter.toLowerCase());
-      let res;
-      if (existing) {
-        res = await db.from('votes').update({ book_id:bookId, voter_name:voter }).eq('id',existing.id);
-      } else {
-        res = await db.from('votes').insert({ poll_id:poll.id, book_id:bookId, voter_name:voter, voter_key:voter.toLowerCase() });
-      }
-      if (res.error) {
-        $('#vote-notice').textContent = 'Не получилось сохранить голос: ' + res.error.message;
-        return;
-      }
-      $('#vote-notice').textContent = 'Голос сохранён 🩷';
-      await load();
-    }
-
-    $('#book-form').addEventListener('submit', async e => {
-      e.preventDefault();
-      if (!poll) return;
-      const title = clean($('#title').value), author = clean($('#author').value), proposer = clean($('#proposer').value);
-      if (!title) return;
-      const { error } = await db.from('books').insert({ poll_id:poll.id, title, author, proposer });
-      if (error) {
-        $('#book-notice').textContent = 'Не получилось добавить книгу: ' + error.message;
-        return;
-      }
-      e.target.reset();
-      $('#book-notice').textContent = 'Книга добавлена 📚';
-      await load();
-    });
-
-    $('#refresh').addEventListener('click', load);
-    load();
-  })();
-  </script>
+  if(!books.length){$('#books').innerHTML='<div class="empty">Пока ни одной книги. Кто будет первой? 👀</div>';paintTie();return}
+  $('#books').innerHTML='';
+  books.forEach(b=>{
+    const row=document.createElement('div');
+    row.className='book'+((winner&&winner.id===b.id)||(reveal&&!winner&&max>0&&counts[b.id]===max)?' winner':'');
+    const info=document.createElement('div'),t=document.createElement('div'),m=document.createElement('div');
+    t.className='book-title';t.textContent=(winner&&winner.id===b.id?'👑 ':'')+b.title;
+    m.className='meta';m.textContent=[b.author,b.proposer?'предложила: '+b.proposer:''].filter(Boolean).join(' · ')||'Без дополнительных данных';
+    info.append(t,m);
+    const side=document.createElement('div');side.className='vote';
+    const c=document.createElement('span');c.className='count';c.textContent=reveal?counts[b.id]:'♡';
+    const btn=document.createElement('button');btn.type='button';btn.className='soft';btn.textContent=poll?.is_closed?'Завершено':'Голосую';btn.disabled=!!poll?.is_closed;btn.addEventListener('click',()=>voteFor(b.id));
+    side.append(c,btn);
+    if(isAdmin&&!poll?.is_closed){const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Удалить';del.addEventListener('click',()=>deleteBook(b.id,b.title));side.append(del)}
+    row.append(info,side);$('#books').append(row)
+  });
+  paintTie()
+}
+function paintTie(){
+  const box=$('#tie-box');box.innerHTML='';
+  if(!isAdmin||!poll?.is_closed||poll?.winner_book_id){box.classList.add('hidden');return}
+  const lead=leaders();
+  if(lead.items.length<2){box.classList.add('hidden');return}
+  box.classList.remove('hidden');
+  const h=document.createElement('h3');h.textContent='Ничья 👀';
+  const p=document.createElement('div');p.className='status';p.textContent=`По ${lead.max} голос(а). Выбери победителя вручную:`;
+  const actions=document.createElement('div');actions.className='tie-buttons';
+  lead.items.forEach(b=>{const btn=document.createElement('button');btn.type='button';btn.className='primary';btn.textContent='👑 '+b.title;btn.addEventListener('click',()=>chooseWinner(b.id));actions.append(btn)});
+  box.append(h,p,actions)
+}
+async function renderHistory(){
+  if(!historyPolls.length){$('#history').innerHTML='<div class="empty">Пока история только начинается ♡</div>';return}
+  const winnerIds=[...new Set(historyPolls.map(p=>p.winner_book_id).filter(Boolean))];
+  let winners=[];
+  if(winnerIds.length){const {data}=await db.from('books').select('*').in('id',winnerIds);winners=data||[]}
+  $('#history').innerHTML='';
+  historyPolls.forEach(p=>{
+    const b=winners.find(x=>x.id===p.winner_book_id);if(!b)return;
+    const row=document.createElement('div');row.className='history-item';
+    const month=document.createElement('div');month.className='history-month';month.textContent=p.title;
+    const info=document.createElement('div');
+    const title=document.createElement('div');title.className='history-title';title.textContent='👑 '+b.title;
+    const meta=document.createElement('div');meta.className='history-meta';meta.textContent=b.author||'';
+    info.append(title,meta);row.append(month,info);$('#history').append(row)
+  })
+}
+async function voteFor(bookId){
+  if(!poll||poll.is_closed)return;
+  const voter=clean($('#voter').value);if(!voter){$('#vote-notice').textContent='Сначала напиши своё имя или ник ♡';return}
+  const key=voter.toLowerCase(),existing=votes.find(v=>v.voter_key===key);let res;
+  if(existing)res=await db.from('votes').update({book_id:bookId,voter_name:voter}).eq('id',existing.id);
+  else res=await db.from('votes').insert({poll_id:poll.id,book_id:bookId,voter_name:voter,voter_key:key});
+  $('#vote-notice').textContent=res.error?'Не получилось сохранить голос: '+res.error.message:'Голос сохранён 🩷';
+  if(!res.error)await load()
+}
+$('#book-form').addEventListener('submit',async e=>{
+  e.preventDefault();if(!poll||poll.is_closed)return;
+  const title=clean($('#title').value),author=clean($('#author').value),proposer=clean($('#proposer').value);if(!title)return;
+  const {error}=await db.from('books').insert({poll_id:poll.id,title,author,proposer});
+  $('#book-notice').textContent=error?'Не получилось добавить книгу: '+error.message:'Книга добавлена 📚';
+  if(!error){e.target.reset();await load()}
+});
+async function deleteBook(id,title){
+  if(!isAdmin||!confirm(`Удалить «${title}» вместе с её голосами?`))return;
+  const {error}=await db.from('books').delete().eq('id',id);
+  $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Книга удалена.';await load()
+}
+$('#close-poll').addEventListener('click',async()=>{
+  if(!isAdmin||!poll)return;
+  const lead=leaders();
+  if(lead.max===0){$('#admin-notice').textContent='Нельзя выбрать победителя: пока нет ни одного голоса.';return}
+  if(!confirm('Закрыть голосование? После этого девочки больше не смогут голосовать.'))return;
+  const winnerId=lead.items.length===1?lead.items[0].id:null;
+  const {error}=await db.from('polls').update({
+    is_closed:true,show_results:true,winner_book_id:winnerId,closed_at:new Date().toISOString()
+  }).eq('id',poll.id);
+  $('#admin-notice').textContent=error?'Ошибка: '+error.message:(winnerId?'Победитель выбран автоматически 👑':'Ничья! Выбери победителя из лидеров ниже.');
+  await load()
+});
+async function chooseWinner(bookId){
+  if(!isAdmin||!poll?.is_closed)return;
+  const {error}=await db.from('polls').update({winner_book_id:bookId,show_results:true}).eq('id',poll.id);
+  $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Победитель утверждён 👑';await load()
+}
+$('#reopen-poll').addEventListener('click',async()=>{
+  if(!isAdmin||!poll||!confirm('Вернуть голосование? Победитель будет снят, и снова можно будет голосовать.'))return;
+  const {error}=await db.from('polls').update({is_closed:false,winner_book_id:null,closed_at:null}).eq('id',poll.id);
+  $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Голосование снова открыто.';await load()
+});
+$('#toggle-results').addEventListener('click',async()=>{
+  if(!isAdmin||!poll)return;
+  const {error}=await db.from('polls').update({show_results:!poll.show_results}).eq('id',poll.id);
+  $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Настройка результатов изменена.';await load()
+});
+$('#delete-votes').addEventListener('click',async()=>{
+  if(!isAdmin||!poll||poll.is_closed){$('#admin-notice').textContent='Сначала верни голосование, если хочешь обнулить голоса.';return}
+  if(!confirm('Точно удалить ВСЕ голоса текущего месяца?'))return;
+  const {error}=await db.from('votes').delete().eq('poll_id',poll.id);
+  $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Все голоса текущего месяца удалены.';await load()
+});
+$('#create-poll').addEventListener('click',async()=>{
+  if(!isAdmin)return;
+  if(poll&&!poll.is_closed){$('#admin-notice').textContent='Сначала заверши текущий месяц и выбери победителя.';return}
+  if(poll&&poll.is_closed&&!poll.winner_book_id){$('#admin-notice').textContent='Сначала разреши ничью и утверди победителя.';return}
+  const title=clean($('#new-poll-title').value);if(!title){$('#admin-notice').textContent='Напиши название нового месяца.';return}
+  if(poll){const old=await db.from('polls').update({is_active:false}).eq('id',poll.id);if(old.error){$('#admin-notice').textContent='Не удалось убрать прошлый месяц: '+old.error.message;return}}
+  const {error}=await db.from('polls').insert({title,is_active:true,is_closed:false,show_results:false});
+  $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Новый месяц открыт 🩷';$('#new-poll-title').value='';await load()
+});
+const dlg=$('#admin-dialog');
+$('#admin-login').addEventListener('click',()=>dlg.showModal());
+$('#close-dialog').addEventListener('click',()=>dlg.close());
+$('#send-link').addEventListener('click',async()=>{
+  const email=clean($('#admin-email').value);if(!email){$('#login-notice').textContent='Введи почту.';return}
+  const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:location.href}});
+  $('#login-notice').textContent=error?'Ошибка: '+error.message:'Ссылка отправлена. Открой письмо на этом же устройстве ♡'
+});
+$('#admin-logout').addEventListener('click',async()=>{await db.auth.signOut();session=null;isAdmin=false;paintAdmin();await load()});
+$('#refresh').addEventListener('click',load);
+db.auth.onAuthStateChange(async()=>{await checkAdmin();await load()});
+(async()=>{await checkAdmin();await load()})();
+})();
+</script>
 </body>
 </html>
