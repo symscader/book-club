@@ -125,7 +125,7 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 <form id="book-form" class="grid">
 <input id="title" required maxlength="100" placeholder="Название книги">
 <input id="author" maxlength="80" placeholder="Автор">
-<input id="proposer" maxlength="50" placeholder="Кто предложил">
+<input id="proposer" required maxlength="50" placeholder="Кто предложил">
 <button class="primary" type="submit">Добавить</button>
 </form>
 <div id="book-notice" class="notice"></div>
@@ -167,6 +167,7 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 (() => {
 const $=s=>document.querySelector(s);
 const clean=s=>String(s||'').trim().replace(/\s+/g,' ');
+const personKey=s=>clean(s).toLocaleLowerCase('ru-RU');
 const cfg=window.BOOK_CLUB_CONFIG||{};
 if(!cfg.supabaseUrl||!cfg.supabaseAnonKey){$('#books').innerHTML='<div class="empty">Не заполнен config.js</div>';return}
 const db=supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
@@ -289,10 +290,21 @@ async function voteFor(bookId){
 }
 $('#book-form').addEventListener('submit',async e=>{
   e.preventDefault();if(!poll||poll.is_closed)return;
-  const title=clean($('#title').value),author=clean($('#author').value),proposer=clean($('#proposer').value);if(!title)return;
-  const {error}=await db.from('books').insert({poll_id:poll.id,title,author,proposer});
-  $('#book-notice').textContent=error?'Не получилось добавить книгу: '+error.message:'Книга добавлена 📚';
-  if(!error){e.target.reset();await load()}
+  const title=clean($('#title').value),author=clean($('#author').value),proposer=clean($('#proposer').value);
+  if(!title){$('#book-notice').textContent='Напиши название книги ♡';return}
+  if(!proposer){$('#book-notice').textContent='Напиши своё имя или ник ♡';$('#proposer').focus();return}
+  const proposer_key=personKey(proposer);
+  const {error}=await db.from('books').insert({poll_id:poll.id,title,author,proposer,proposer_key});
+  if(error){
+    if(error.code==='23505'){
+      $('#book-notice').textContent='Ты уже предложила книгу на этот месяц ♡ Если хочешь заменить её — попроси админа удалить старую.';
+    }else{
+      $('#book-notice').textContent='Не получилось добавить книгу: '+error.message;
+    }
+    return;
+  }
+  $('#book-notice').textContent='Книга добавлена 📚';
+  e.target.reset();await load()
 });
 async function deleteBook(id,title){
   if(!isAdmin||!confirm(`Удалить «${title}» вместе с её голосами?`))return;
