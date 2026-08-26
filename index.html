@@ -63,6 +63,34 @@ button:disabled{cursor:not-allowed;opacity:.6}
 .book{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:18px;padding:14px;background:#fffaf8}
 .book.winner{outline:2px solid #d5966f;background:var(--sand)}
 .book-title{font-weight:900;font-size:17px}
+  .book-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  flex:1;
+}
+
+.book-cover{
+  width:54px;
+  height:76px;
+  flex:0 0 54px;
+  border-radius:10px;
+  overflow:hidden;
+  background:var(--pink2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  border:1px solid var(--line);
+}
+
+.book-cover img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
 .meta{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.4}
 .vote{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .count{min-width:32px;text-align:center;font-weight:900;font-size:20px}
@@ -336,14 +364,34 @@ function render(){
     const ownBook=!!voterKey && !!b.proposer_key && b.proposer_key===voterKey;
     const chosen=selectedVotes.has(b.id);
     const row=document.createElement('div');
-    row.className='book'+((winner&&winner.id===b.id)||(reveal&&!winner&&max>0&&counts[b.id]===max)?' winner':'');
-    const info=document.createElement('div'),t=document.createElement('div'),m=document.createElement('div');
+row.className='book'+(((winner&&winner.id===b.id)||(reveal&&winner&&max>0&&counts[b.id]===max))?' winner':'');
+
+const left=document.createElement('div');
+left.className='book-left';
+
+const cover=document.createElement('div');
+cover.className='book-cover';
+
+if(b.cover_url){
+  const img=document.createElement('img');
+  img.src=b.cover_url;
+  img.alt='Обложка '+b.title;
+  cover.appendChild(img);
+}else{
+  cover.textContent='📖';
+}
+
+const info=document.createElement('div'),
+      t=document.createElement('div'),
+      m=document.createElement('div');
     t.className='book-title';t.textContent=(winner&&winner.id===b.id?'👑 ':'')+b.title;
     m.className='meta';
     const metaBits=[b.author,b.proposer?'предложила: '+b.proposer:''];
     if(ownBook)metaBits.push('твоя заявка — голосовать нельзя');
     m.textContent=metaBits.filter(Boolean).join(' · ')||'Без дополнительных данных';
     info.append(t,m);
+    left.append(cover,info);
+    row.append(left);
 
     const side=document.createElement('div');side.className='vote';
     const c=document.createElement('span');c.className='count';c.textContent=reveal?counts[b.id]:'♡';
@@ -358,7 +406,7 @@ function render(){
       const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Удалить';
       del.addEventListener('click',()=>deleteBook(b.id,b.title));side.append(del)
     }
-    row.append(info,side);$('#books').append(row)
+    row.append(side);$('#books').append(row)
   });
   paintVotePicker();paintTie()
 }
