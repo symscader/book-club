@@ -121,14 +121,59 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 </section>
 
 <section id="add-book-card" class="card">
-<h2>Добавить книгу 📚</h2>
-<form id="book-form" class="grid">
-<input id="title" required maxlength="100" placeholder="Название книги">
-<input id="author" maxlength="80" placeholder="Автор">
-<input id="proposer" required maxlength="50" placeholder="Кто предложил">
-<button class="primary" type="submit">Добавить</button>
-</form>
-<div id="book-notice" class="notice"></div>
+  <h2>Добавить книгу 📚</h2>
+
+  <form id="book-form">
+    <div class="grid">
+      <input
+        id="title"
+        required
+        maxlength="100"
+        placeholder="Название книги"
+      >
+
+      <input
+        id="author"
+        maxlength="80"
+        placeholder="Автор"
+      >
+
+      <input
+        id="proposer"
+        required
+        maxlength="50"
+        placeholder="Кто предложил"
+      >
+    </div>
+
+    <textarea
+      id="description"
+      maxlength="2000"
+      rows="5"
+      placeholder="Аннотация книги"
+      style="width:100%;margin-top:10px;resize:vertical"
+    ></textarea>
+
+    <div style="margin-top:10px">
+      <label for="cover" class="tiny">Обложка книги</label>
+      <input
+        id="cover"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        style="width:100%;margin-top:6px"
+      >
+    </div>
+
+    <button
+      class="primary"
+      type="submit"
+      style="margin-top:12px"
+    >
+      Добавить
+    </button>
+  </form>
+
+  <div id="book-notice" class="notice"></div>
 </section>
 
 <section class="card">
