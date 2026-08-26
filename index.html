@@ -443,23 +443,112 @@ $('#voter').addEventListener('input',()=>{
   selectedVotes.clear();paintVotePicker();render()
 });
 
-$('#book-form').addEventListener('submit',async e=>{
-  e.preventDefault();if(!poll||poll.is_closed)return;
-  const title=clean($('#title').value),author=clean($('#author').value),proposer=clean($('#proposer').value);
-  if(!title){$('#book-notice').textContent='Напиши название книги ♡';return}
-  if(!proposer){$('#book-notice').textContent='Напиши своё имя или ник ♡';$('#proposer').focus();return}
-  const proposer_key=personKey(proposer);
-  const {error}=await db.from('books').insert({poll_id:poll.id,title,author,proposer,proposer_key});
-  if(error){
-    if(error.code==='23505'){
-      $('#book-notice').textContent='Ты уже предложила книгу на этот месяц ♡ Если хочешь заменить её — попроси админа удалить старую.';
-    }else{
-      $('#book-notice').textContent='Не получилось добавить книгу: '+error.message;
+$('#book-form').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  if (!poll || poll.is_closed) return;
+
+  const title = clean($('#title').value);
+  const author = clean($('#author').value);
+  const proposer = clean($('#proposer').value);
+  const description = clean($('#description').value);
+  const coverFile = $('#cover').files[0];
+
+  if (!title) {
+    $('#book-notice').textContent = 'Напиши название книги ♡';
+    $('#title').focus();
+    return;
+  }
+
+  if (!proposer) {
+    $('#book-notice').textContent = 'Напиши своё имя или ник ♡';
+    $('#proposer').focus();
+    return;
+  }
+
+  const proposer_key = personKey(proposer);
+  const title_key = title
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+
+  // Сначала проверяем, не участвует ли эта книга уже в голосовании
+  const { data: duplicate, error: duplicateError } = await db
+    .from('books')
+    .select('id')
+    .eq('poll_id', poll.id)
+    .eq('title_key', title_key)
+    .maybeSingle();
+
+  if (duplicateError) {
+    $('#book-notice').textContent =
+      'Не получилось проверить книгу: ' + duplicateError.message;
+    return;
+  }
+
+  if (duplicate) {
+    $('#book-notice').textContent =
+      'Эта книга уже участвует в голосовании ♡';
+    return;
+  }
+
+  let cover_url = null;
+
+  // Если выбрана обложка — загружаем её в Storage
+  if (coverFile) {
+    $('#book-notice').textContent = 'Загружаю обложку… 📚';
+
+    const ext = coverFile.name.split('.').pop().toLowerCase();
+    const fileName =
+      `${poll.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error: uploadError } = await db.storage
+      .from('book-covers')
+      .upload(fileName, coverFile, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      $('#book-notice').textContent =
+        'Не получилось загрузить обложку: ' + uploadError.message;
+      return;
+    }
+
+    const { data: publicData } = db.storage
+      .from('book-covers')
+      .getPublicUrl(fileName);
+
+    cover_url = publicData.publicUrl;
+  }
+
+  // Теперь создаём саму книгу
+  const { error } = await db.from('books').insert({
+    poll_id: poll.id,
+    title,
+    title_key,
+    author,
+    proposer,
+    proposer_key,
+    description: description || null,
+    cover_url
+  });
+
+  if (error) {
+    if (error.code === '23505') {
+      $('#book-notice').textContent =
+        'Ты уже предложила книгу на этот месяц ♡ Если хочешь заменить её — попроси админа удалить старую.';
+    } else {
+      $('#book-notice').textContent =
+        'Не получилось добавить книгу: ' + error.message;
     }
     return;
   }
-  $('#book-notice').textContent='Книга добавлена 📚';
-  e.target.reset();await load()
+
+  $('#book-notice').textContent = 'Книга добавлена 📚';
+  e.target.reset();
+
+  await load();
 });
 async function deleteBook(id,title){
   if(!isAdmin||!confirm(`Удалить «${title}» вместе с её голосами?`))return;
