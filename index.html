@@ -717,7 +717,7 @@ $('#book-form').addEventListener('submit', async e => {
   const title = clean($('#title').value);
   const author = clean($('#author').value);
   const proposer = clean($('#proposer').value);
-  const description = clean($('#description').value);
+  const description = String($('#description').value || '').trim();
   const coverFile = $('#cover').files[0];
 
   if (!title) {
