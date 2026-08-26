@@ -676,5 +676,30 @@ db.auth.onAuthStateChange(async()=>{await checkAdmin();await load()});
 (async()=>{await checkAdmin();await load()})();
 })();
 </script>
+  <dialog id="book-dialog" class="book-dialog">
+  <div class="book-modal">
+    <button
+      id="close-book-dialog"
+      class="book-modal-close"
+      type="button"
+      aria-label="Закрыть"
+    >×</button>
+
+    <div class="book-modal-content">
+      <div class="book-modal-cover" id="modal-cover"></div>
+
+      <div class="book-modal-info">
+        <h2 id="modal-title"></h2>
+        <div id="modal-author" class="book-modal-author"></div>
+        <div id="modal-proposer" class="book-modal-proposer"></div>
+
+        <div class="book-modal-divider"></div>
+
+        <h3>Аннотация</h3>
+        <div id="modal-description" class="book-modal-description"></div>
+      </div>
+    </div>
+  </div>
+</dialog>
 </body>
 </html>
