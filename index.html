@@ -538,8 +538,7 @@ function paintVotePicker(){
   const el=$('#vote-picker-status');
   if(el)el.textContent=`Выбрано: ${selectedVotes.size} из 2`;
 }
-function render(){
-  function openBookDialog(book){
+    function openBookDialog(book){
   const dlg = $('#book-dialog');
 
   $('#modal-title').textContent = book.title || '';
@@ -565,6 +564,7 @@ function render(){
 
   dlg.showModal();
 }
+function render(){
   const counts=getCounts(),reveal=!!poll?.show_results||!!poll?.is_closed||isAdmin,max=Math.max(0,...Object.values(counts));
   $('#summary').textContent = poll?.is_closed
   ? `Голосование завершено · ${votes.length} голос(ов)`
