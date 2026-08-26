@@ -91,6 +91,141 @@ button:disabled{cursor:not-allowed;opacity:.6}
   object-fit:cover;
   display:block;
 }
+  .book-left{
+  cursor:pointer;
+}
+
+.book-dialog{
+  width:min(760px,calc(100% - 32px));
+  max-height:88vh;
+  padding:0;
+  border:0;
+  border-radius:24px;
+  background:#fffaf8;
+  color:var(--text);
+  box-shadow:0 24px 70px rgba(92,52,64,.22);
+}
+
+.book-dialog::backdrop{
+  background:rgba(74,45,54,.38);
+  backdrop-filter:blur(3px);
+}
+
+.book-modal{
+  position:relative;
+  padding:28px;
+}
+
+.book-modal-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:40px;
+  height:40px;
+  min-height:40px;
+  padding:0;
+  border-radius:50%;
+  background:var(--pink2);
+  color:#8f4e60;
+  font-size:26px;
+  line-height:1;
+  z-index:2;
+}
+
+.book-modal-content{
+  display:grid;
+  grid-template-columns:180px minmax(0,1fr);
+  gap:26px;
+  align-items:start;
+}
+
+.book-modal-cover{
+  width:180px;
+  aspect-ratio:2/3;
+  border-radius:16px;
+  overflow:hidden;
+  background:var(--pink2);
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:54px;
+}
+
+.book-modal-cover img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.book-modal-info{
+  min-width:0;
+  padding-right:28px;
+}
+
+.book-modal-info h2{
+  margin:2px 0 6px;
+  font-size:28px;
+  line-height:1.2;
+}
+
+.book-modal-author{
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+.book-modal-proposer{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.book-modal-divider{
+  height:1px;
+  background:var(--line);
+  margin:20px 0;
+}
+
+.book-modal-info h3{
+  margin:0 0 9px;
+  font-size:16px;
+}
+
+.book-modal-description{
+  line-height:1.6;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+@media(max-width:600px){
+  .book-modal{
+    padding:22px;
+  }
+
+  .book-modal-content{
+    grid-template-columns:1fr;
+  }
+
+  .book-modal-cover{
+    width:130px;
+    margin:auto;
+  }
+
+  .book-modal-info{
+    padding-right:0;
+  }
+
+  .book-modal-info h2{
+    text-align:center;
+    padding:0 28px;
+  }
+
+  .book-modal-author,
+  .book-modal-proposer{
+    text-align:center;
+  }
+}
 .meta{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.4}
 .vote{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .count{min-width:32px;text-align:center;font-weight:900;font-size:20px}
@@ -265,7 +400,32 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 
 <script src="./config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+<dialog id="book-dialog" class="book-dialog">
+  <div class="book-modal">
+    <button
+      id="close-book-dialog"
+      class="book-modal-close"
+      type="button"
+      aria-label="Закрыть"
+    >×</button>
+
+    <div class="book-modal-content">
+      <div class="book-modal-cover" id="modal-cover"></div>
+
+      <div class="book-modal-info">
+        <h2 id="modal-title"></h2>
+        <div id="modal-author" class="book-modal-author"></div>
+        <div id="modal-proposer" class="book-modal-proposer"></div>
+
+        <div class="book-modal-divider"></div>
+
+        <h3>Аннотация</h3>
+        <div id="modal-description" class="book-modal-description"></div>
+      </div>
+    </div>
+  </div>
+</dialog>
+  <script>
 (() => {
 const $=s=>document.querySelector(s);
 const clean=s=>String(s||'').trim().replace(/\s+/g,' ');
@@ -337,6 +497,32 @@ function paintVotePicker(){
   if(el)el.textContent=`Выбрано: ${selectedVotes.size} из 2`;
 }
 function render(){
+  function openBookDialog(book){
+  const dlg = $('#book-dialog');
+
+  $('#modal-title').textContent = book.title || '';
+  $('#modal-author').textContent = book.author || 'Автор не указан';
+  $('#modal-proposer').textContent = book.proposer
+    ? `Предложила: ${book.proposer} ♡`
+    : 'Предложившая не указана';
+
+  $('#modal-description').textContent =
+    book.description || 'Аннотация пока не добавлена.';
+
+  const cover = $('#modal-cover');
+  cover.innerHTML = '';
+
+  if(book.cover_url){
+    const img = document.createElement('img');
+    img.src = book.cover_url;
+    img.alt = 'Обложка ' + book.title;
+    cover.appendChild(img);
+  }else{
+    cover.textContent = '📖';
+  }
+
+  dlg.showModal();
+}
   const counts=getCounts(),reveal=!!poll?.show_results||!!poll?.is_closed||isAdmin,max=Math.max(0,...Object.values(counts));
   $('#summary').textContent = poll?.is_closed
   ? `Голосование завершено · ${votes.length} голос(ов)`
@@ -391,6 +577,7 @@ const info=document.createElement('div'),
     m.textContent=metaBits.filter(Boolean).join(' · ')||'Без дополнительных данных';
     info.append(t,m);
     left.append(cover,info);
+    left.addEventListener('click',()=>openBookDialog(b));
     row.append(left);
 
     const side=document.createElement('div');side.className='vote';
@@ -671,35 +858,20 @@ $('#send-link').addEventListener('click',async()=>{
   $('#login-notice').textContent=error?'Ошибка: '+error.message:'Ссылка отправлена. Открой письмо на этом же устройстве ♡'
 });
 $('#admin-logout').addEventListener('click',async()=>{await db.auth.signOut();session=null;isAdmin=false;paintAdmin();await load()});
+const bookDlg = $('#book-dialog');
 
+$('#close-book-dialog').addEventListener('click',()=>{
+  bookDlg.close();
+});
+
+bookDlg.addEventListener('click',e=>{
+  if(e.target === bookDlg){
+    bookDlg.close();
+  }
+});
 db.auth.onAuthStateChange(async()=>{await checkAdmin();await load()});
 (async()=>{await checkAdmin();await load()})();
 })();
 </script>
-  <dialog id="book-dialog" class="book-dialog">
-  <div class="book-modal">
-    <button
-      id="close-book-dialog"
-      class="book-modal-close"
-      type="button"
-      aria-label="Закрыть"
-    >×</button>
-
-    <div class="book-modal-content">
-      <div class="book-modal-cover" id="modal-cover"></div>
-
-      <div class="book-modal-info">
-        <h2 id="modal-title"></h2>
-        <div id="modal-author" class="book-modal-author"></div>
-        <div id="modal-proposer" class="book-modal-proposer"></div>
-
-        <div class="book-modal-divider"></div>
-
-        <h3>Аннотация</h3>
-        <div id="modal-description" class="book-modal-description"></div>
-      </div>
-    </div>
-  </div>
-</dialog>
 </body>
 </html>
