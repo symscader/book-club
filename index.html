@@ -278,6 +278,16 @@ button:disabled{cursor:not-allowed;opacity:.6}
 .tie-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .history{display:grid;gap:10px}
 .history-item{display:grid;grid-template-columns:130px minmax(0,1fr);gap:12px;padding:14px;border-radius:18px;background:#fffaf8;border:1px solid var(--line)}
+  .history-item{
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.history-item:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 18px rgba(92,52,64,.08);
+  border-color:#d9a6b4;
+}
 .history-month{font-weight:900;color:#a35469}
 .history-title{font-weight:900}
 .history-meta{font-size:13px;color:var(--muted);margin-top:4px}
@@ -663,12 +673,14 @@ async function renderHistory(){
   $('#history').innerHTML='';
   historyPolls.forEach(p=>{
     const b=winners.find(x=>x.id===p.winner_book_id);if(!b)return;
-    const row=document.createElement('div');row.className='history-item';
+    const row=document.createElement('div');row.className='history-item';row.style.cursor='pointer';row.addEventListener('click',()=>openBookDialog(b));
     const month=document.createElement('div');month.className='history-month';month.textContent=p.title;
     const info=document.createElement('div');
     const title=document.createElement('div');title.className='history-title';title.textContent='👑 '+b.title;
     const meta=document.createElement('div');meta.className='history-meta';meta.textContent=[  b.author,  b.proposer ? `предложила: ${b.proposer} ♡` : ''].filter(Boolean).join(' · ');
-    info.append(title,meta);row.append(month,info);$('#history').append(row)
+info.append(title,meta);
+row.append(month,info);
+$('#history').append(row);
   })
 }
 
