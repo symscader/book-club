@@ -308,6 +308,7 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 <div class="status">Книга месяца выбрана!</div>
 <h3 id="winner-title"></h3>
 <p id="winner-author"></p>
+<p id="winner-proposer"></p>
 <p id="winner-votes"></p>
 </section>
 
@@ -571,6 +572,7 @@ function render(){
   if(winner){
     $('#winner-title').textContent='«'+winner.title+'»';
     $('#winner-author').textContent=winner.author||'';
+    $('#winner-proposer').textContent = winner.proposer  ? `Предложила: ${winner.proposer} ♡`  : '';
     $('#winner-votes').textContent=`Победила с ${counts[winner.id]||0} голос(ами) 🩷`;
   }
 
@@ -665,7 +667,7 @@ async function renderHistory(){
     const month=document.createElement('div');month.className='history-month';month.textContent=p.title;
     const info=document.createElement('div');
     const title=document.createElement('div');title.className='history-title';title.textContent='👑 '+b.title;
-    const meta=document.createElement('div');meta.className='history-meta';meta.textContent=b.author||'';
+    const meta=document.createElement('div');meta.className='history-meta';meta.textContent=[  b.author,  b.proposer ? `предложила: ${b.proposer} ♡` : ''].filter(Boolean).join(' · ');
     info.append(title,meta);row.append(month,info);$('#history').append(row)
   })
 }
