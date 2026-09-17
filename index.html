@@ -1013,6 +1013,11 @@ $('#send-link').addEventListener('click',async()=>{
   $('#login-notice').textContent=error?'Ошибка: '+error.message:'Ссылка отправлена. Открой письмо на этом же устройстве ♡'
 });
 $('#admin-logout').addEventListener('click',async()=>{await db.auth.signOut();session=null;isAdmin=false;paintAdmin();await load()});
+  $('#winner-banner').addEventListener('click',()=>{
+  if(currentMonthBook){
+    openBookDialog(currentMonthBook);
+  }
+});
 const bookDlg = $('#book-dialog');
 
 $('#close-book-dialog').addEventListener('click',()=>{
