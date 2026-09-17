@@ -338,7 +338,6 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
 
 <div class="grid2">
-<input id="new-poll-title" maxlength="80" placeholder="Например: Октябрь 2026 ♡">
 <button id="create-poll" class="primary" type="button">Новый месяц</button>
 </div>
 <p class="tiny">Новый месяц можно создать только после завершения текущего.</p>
@@ -946,12 +945,64 @@ $('#delete-votes').addEventListener('click',async()=>{
 });
 $('#create-poll').addEventListener('click',async()=>{
   if(!isAdmin)return;
-  if(poll&&!poll.is_closed){$('#admin-notice').textContent='Сначала заверши текущий месяц и выбери победителя.';return}
-  if(poll&&poll.is_closed&&!poll.winner_book_id){$('#admin-notice').textContent='Сначала разреши ничью и утверди победителя.';return}
-  const title=clean($('#new-poll-title').value);if(!title){$('#admin-notice').textContent='Напиши название нового месяца.';return}
-  if(poll){const old=await db.from('polls').update({is_active:false}).eq('id',poll.id);if(old.error){$('#admin-notice').textContent='Не удалось убрать прошлый месяц: '+old.error.message;return}}
-  const {error}=await db.from('polls').insert({title,is_active:true,is_closed:false,show_results:false});
-  $('#admin-notice').textContent=error?'Ошибка: '+error.message:'Новый месяц открыт 🩷';$('#new-poll-title').value='';await load()
+
+  if(poll&&!poll.is_closed){
+    $('#admin-notice').textContent='Сначала заверши текущий месяц и выбери победителя.';
+    return;
+  }
+
+  if(poll&&poll.is_closed&&!poll.winner_book_id){
+    $('#admin-notice').textContent='Сначала разреши ничью и утверди победителя.';
+    return;
+  }
+
+  if(!poll?.reading_month){
+    $('#admin-notice').textContent='У текущего месяца не задан календарный месяц.';
+    return;
+  }
+
+  const [year,month]=poll.reading_month.split('-').map(Number);
+  const nextDate=new Date(year,month,1);
+
+  const nextReadingMonth=
+    nextDate.getFullYear()+'-'+
+    String(nextDate.getMonth()+1).padStart(2,'0')+
+    '-01';
+
+  const monthNames=[
+    'Январь','Февраль','Март','Апрель','Май','Июнь',
+    'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'
+  ];
+
+  const title=
+    `${monthNames[nextDate.getMonth()]} ${nextDate.getFullYear()} ♡`;
+
+  if(poll){
+    const old=await db
+      .from('polls')
+      .update({is_active:false})
+      .eq('id',poll.id);
+
+    if(old.error){
+      $('#admin-notice').textContent=
+        'Не удалось убрать прошлый месяц: '+old.error.message;
+      return;
+    }
+  }
+
+  const {error}=await db.from('polls').insert({
+    title,
+    reading_month:nextReadingMonth,
+    is_active:true,
+    is_closed:false,
+    show_results:false
+  });
+
+  $('#admin-notice').textContent=error
+    ? 'Ошибка: '+error.message
+    : `Открыт новый месяц: ${title}`;
+
+  await load();
 });
 const dlg=$('#admin-dialog');
 $('#admin-login').addEventListener('click',()=>dlg.showModal());
