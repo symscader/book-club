@@ -748,7 +748,8 @@ await load();syncSelectionFromVotes();render();
 $('#vote-notice').textContent=`Голоса сохранены ♡ (${chosen.length} из 2)`;
   });
 $('#voter').addEventListener('input',()=>{
-  selectedVotes.clear();paintVotePicker();render()
+  syncSelectionFromVotes();
+  render();
 });
 
 $('#book-form').addEventListener('submit', async e => {
