@@ -699,7 +699,6 @@ $('#save-votes').addEventListener('click',async()=>{
   const voter=clean($('#voter').value);
   if(!voter){$('#vote-notice').textContent='Сначала напиши своё имя или ник ♡';$('#voter').focus();return}
   const chosen=[...selectedVotes];
-  if(chosen.length===0){$('#vote-notice').textContent='Выбери хотя бы одну книгу ♡';return}
   if(chosen.length>2){$('#vote-notice').textContent='Можно выбрать максимум две книги.';return}
 
   const {error}=await db.rpc('cast_book_club_votes',{
