@@ -521,6 +521,17 @@ const [
 
 currentMonthPoll=!me&&monthPolls?.length ? monthPolls[0] : null;
   historyPolls=closed||[];
+  currentMonthBook=null;
+
+if(currentMonthPoll?.winner_book_id){
+  const {data:monthBook,error:mbe}=await db
+    .from('books')
+    .select('*')
+    .eq('id',currentMonthPoll.winner_book_id)
+    .maybeSingle();
+
+  if(!mbe) currentMonthBook=monthBook;
+}
   if(pe||!polls?.length){
     poll=null;books=[];votes=[];
     $('#poll-label').textContent='Нет активного голосования';
