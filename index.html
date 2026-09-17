@@ -741,7 +741,7 @@ $('#save-votes').addEventListener('click',async()=>{
     return
   }
 await load();syncSelectionFromVotes();render();
-$('#vote-notice').textContent=`Голоса сохранены ♡ (${chosen.length} из 2)`;
+alert(`Голоса сохранены ♡ (${chosen.length} из 2)`);
   });
 $('#voter').addEventListener('input',()=>{
   selectedVotes.clear();paintVotePicker();render()
