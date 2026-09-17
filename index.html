@@ -413,11 +413,12 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 <div class="adminbar">
 <button id="clear-selection" class="ghost" type="button">Сбросить выбор</button>
 <button id="save-votes" class="primary" type="button">Сохранить голоса</button>
+  <div id="vote-notice" class="notice"></div>
 </div>
 </div>
 </div>
 <div id="books" class="books"><div class="empty">Загружаю книги…</div></div>
-<div id="vote-notice" class="notice"></div>
+
 <p class="tiny">У каждой участницы до 2 голосов за разные книги. За свою книгу голосовать нельзя; выбор можно менять до закрытия.</p>
 </section>
 
@@ -741,7 +742,7 @@ $('#save-votes').addEventListener('click',async()=>{
     return
   }
 await load();syncSelectionFromVotes();render();
-alert(`Голоса сохранены ♡ (${chosen.length} из 2)`);
+$('#vote-notice').textContent=`Голоса сохранены ♡ (${chosen.length} из 2)`;
   });
 $('#voter').addEventListener('input',()=>{
   selectedVotes.clear();paintVotePicker();render()
