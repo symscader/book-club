@@ -606,13 +606,19 @@ function render(){
   $('#toggle-results').textContent=poll?.show_results?'Скрыть результаты':'Показать результаты';
 
   const winner=books.find(b=>b.id===poll?.winner_book_id);
-  $('#winner-banner').classList.toggle('hidden',!winner);
-  if(winner){
-    $('#winner-title').textContent='«'+winner.title+'»';
-    $('#winner-author').textContent=winner.author||'';
-    $('#winner-proposer').textContent = winner.proposer  ? `Предложила: ${winner.proposer} ♡`  : '';
-    $('#winner-votes').textContent=`Победила с ${counts[winner.id]||0} голос(ами) 🩷`;
-  }
+  $('#winner-banner').classList.toggle('hidden',!currentMonthBook);
+
+if(currentMonthBook){
+  $('#winner-title').textContent='«'+currentMonthBook.title+'»';
+  $('#winner-author').textContent=currentMonthBook.author||'';
+  $('#winner-proposer').textContent=currentMonthBook.proposer
+    ? `Предложила: ${currentMonthBook.proposer} ♡`
+    : '';
+
+  $('#winner-votes').textContent=currentMonthPoll?.title
+    ? `Книга месяца · ${currentMonthPoll.title}`
+    : 'Книга месяца ♡';
+}
 
   if(!books.length){$('#books').innerHTML='<div class="empty">Пока ни одной книги. Кто будет первой? 👀</div>';paintTie();paintVotePicker();return}
   $('#books').innerHTML='';
