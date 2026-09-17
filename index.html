@@ -691,8 +691,33 @@ $('#load-my-votes').addEventListener('click',()=>{
   $('#vote-notice').textContent=selectedVotes.size?`Твои текущие голоса загружены: ${selectedVotes.size}.`:'У тебя пока нет сохранённых голосов.';
   render()
 });
-$('#clear-selection').addEventListener('click',()=>{
-  selectedVotes.clear();$('#vote-notice').textContent='Выбор очищен. Нажми «Сохранить голоса», чтобы применить.';render()
+$('#clear-selection').addEventListener('click',async()=>{
+  if(!poll || poll.is_closed) return;
+
+  const voter = clean($('#voter').value);
+
+  if(!voter){
+    $('#vote-notice').textContent='Сначала напиши своё имя или ник ♡';
+    $('#voter').focus();
+    return;
+  }
+
+  if(!confirm('Точно убрать все свои голоса?')) return;
+
+  const {error} = await db.rpc('cast_book_club_votes',{
+    p_poll_id: poll.id,
+    p_voter_name: voter,
+    p_book_ids: []
+  });
+
+  if(error){
+    $('#vote-notice').textContent='Не получилось удалить голоса: ' + error.message;
+    return;
+  }
+
+  selectedVotes.clear();
+  $('#vote-notice').textContent='Твои голоса удалены ♡';
+  await load();
 });
 $('#save-votes').addEventListener('click',async()=>{
   if(!poll||poll.is_closed)return;
