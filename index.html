@@ -270,6 +270,15 @@ button:disabled{cursor:not-allowed;opacity:.6}
 .adminbar{display:flex;gap:8px;flex-wrap:wrap}
 .tag{display:inline-flex;align-items:center;min-height:34px;padding:6px 10px;border-radius:999px;background:#f7e6eb;color:#914f60;font-size:13px;font-weight:800}
 .winner-banner{border:2px solid #ddae82;background:linear-gradient(135deg,#fff7e9,#fffdfb);border-radius:22px;padding:18px;margin-top:16px;text-align:center}
+  #winner-banner{
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+
+#winner-banner:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 28px rgba(92,52,64,.12);
+}Ф
 .winner-banner .crown{font-size:32px}
 .winner-banner h3{font:700 27px/1.15 Georgia,serif;margin:6px 0;color:#9c5b43}
 .winner-banner p{margin:6px 0;color:var(--muted)}
