@@ -479,7 +479,7 @@ const personKey=s=>clean(s).toLocaleLowerCase('ru-RU');
 const cfg=window.BOOK_CLUB_CONFIG||{};
 if(!cfg.supabaseUrl||!cfg.supabaseAnonKey){$('#books').innerHTML='<div class="empty">Не заполнен config.js</div>';return}
 const db=supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
-let poll=null,books=[],votes=[],isAdmin=false,session=null,historyPolls=[],selectedVotes=new Set();
+let poll=null,books=[],votes=[],isAdmin=false,session=null,historyPolls=[],selectedVotes=new Set(),currentMonthPoll=null,currentMonthBook=null;
 
 async function checkAdmin(){
   const {data:{session:s}}=await db.auth.getSession();
@@ -503,10 +503,23 @@ function leaders(){
   return {max,items:books.filter(b=>counts[b.id]===max)}
 }
 async function load(){
-  const [{data:polls,error:pe},{data:closed,error:he}]=await Promise.all([
-    db.from('polls').select('*').eq('is_active',true).order('created_at',{ascending:false}).limit(1),
-    db.from('polls').select('*').eq('is_closed',true).not('winner_book_id','is',null).order('closed_at',{ascending:false}).limit(24)
-  ]);
+  const now=new Date();
+const currentMonth=
+  now.getFullYear()+'-'+
+  String(now.getMonth()+1).padStart(2,'0')+
+  '-01';
+
+const [
+  {data:polls,error:pe},
+  {data:closed,error:he},
+  {data:monthPolls,error:me}
+]=await Promise.all([
+  db.from('polls').select('*').eq('is_active',true).order('created_at',{ascending:false}).limit(1),
+  db.from('polls').select('*').eq('is_closed',true).not('winner_book_id','is',null).order('closed_at',{ascending:false}).limit(24),
+  db.from('polls').select('*').eq('reading_month',currentMonth).not('winner_book_id','is',null).limit(1)
+]);
+
+currentMonthPoll=!me&&monthPolls?.length ? monthPolls[0] : null;
   historyPolls=closed||[];
   if(pe||!polls?.length){
     poll=null;books=[];votes=[];
