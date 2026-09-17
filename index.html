@@ -740,9 +740,8 @@ $('#save-votes').addEventListener('click',async()=>{
     else $('#vote-notice').textContent='Не получилось сохранить голоса: '+msg;
     return
   }
-  $('#vote-notice').textContent=`Голоса сохранены 🩷 (${chosen.length} из 2)`;
-  await load();syncSelectionFromVotes();render()
-});
+await load();syncSelectionFromVotes();render();
+$('#vote-notice').textContent=`Голоса сохранены ♡ (${chosen.length} из 2)`;
 $('#voter').addEventListener('input',()=>{
   selectedVotes.clear();paintVotePicker();render()
 });
