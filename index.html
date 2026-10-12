@@ -649,7 +649,12 @@ function renderBirthdays(){
 
     const date = document.createElement('div');
     date.className = 'birthday-date';
-    date.textContent = `${b.day} ${monthNames[b.month-1]}`;
+    const seasonEmoji =
+  [12, 1, 2].includes(b.month) ? '❄️' :
+  [3, 4, 5].includes(b.month) ? '🌸' :
+  [6, 7, 8].includes(b.month) ? '☀️' : '🍂';
+
+date.textContent = `${seasonEmoji} ${b.day} ${monthNames[b.month-1]}`;
 
     const name = document.createElement('div');
     name.className = 'birthday-name';
