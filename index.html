@@ -341,6 +341,96 @@ justify-content:center;
   line-height:1;
 }
 
+.birthdays-dialog{
+  width:min(680px,calc(100% - 32px));
+  max-width:680px;
+  max-height:85vh;
+  padding:0;
+  border:1px solid #ead4db;
+  border-radius:24px;
+  background:#fffaf8;
+  color:var(--text);
+  box-shadow:0 24px 70px rgba(92,52,64,.22);
+  overflow-y:auto;
+}
+
+.birthdays-dialog::backdrop{
+  background:rgba(74,45,54,.4);
+  backdrop-filter:blur(3px);
+}
+
+.birthdays-modal{
+  position:relative;
+  padding:30px;
+}
+
+.birthdays-modal h2{
+  margin:0 38px 8px 0;
+  color:#a65370;
+  font-family:Georgia,serif;
+  font-size:26px;
+}
+
+.birthdays-modal-subtitle{
+  color:var(--muted);
+  margin-bottom:24px;
+}
+
+.birthdays-modal-close{
+  position:absolute;
+  top:18px;
+  right:18px;
+  width:38px;
+  height:38px;
+  min-height:38px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#f5dfe6;
+  color:#945369;
+  font-size:24px;
+  cursor:pointer;
+}
+
+.birthdays-calendar{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.birthday-month{
+  background:white;
+  border:1px solid #ead4db;
+  border-radius:16px;
+  padding:16px;
+}
+
+.birthday-month h3{
+  margin:0 0 12px;
+  color:#a65370;
+  font-size:16px;
+}
+
+.birthday-calendar-item{
+  padding:8px 0;
+  border-top:1px solid #f3e4e8;
+  line-height:1.5;
+}
+
+@media(max-width:600px){
+  .birthdays-calendar{
+    grid-template-columns:1fr;
+  }
+
+  .birthdays-modal{
+    padding:22px;
+  }
+
+  .birthdays-modal h2{
+    font-size:22px;
+  }
+}
+
 .birthdays-widget .birthday-empty{
   color:var(--muted);
   font-size:14px;
@@ -553,6 +643,25 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
 
 <script src="./config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+<dialog id="birthdays-dialog" class="birthdays-dialog">
+  <div class="birthdays-modal">
+    <button
+      id="close-birthdays"
+      class="birthdays-modal-close"
+      type="button"
+      aria-label="Закрыть"
+    >×</button>
+
+    <h2>🎂 Наш календарь дней рождения ♡</h2>
+    <p class="birthdays-modal-subtitle">
+      Особенные дни наших книжных девочек 💗
+    </p>
+
+    <div id="birthdays-calendar" class="birthdays-calendar"></div>
+  </div>
+</dialog>
+
 <dialog id="book-dialog" class="book-dialog">
   <div class="book-modal">
    <button
@@ -669,10 +778,58 @@ date.textContent = `${seasonEmoji} ${b.day} ${monthNames[b.month-1]}`;
   button.className = 'birthday-all';
   button.type = 'button';
   button.textContent = 'Все дни рождения ♡';
+  button.addEventListener('click', openBirthdaysCalendar);
   widget.appendChild(button);
 }
 
 renderBirthdays();
+  
+function openBirthdaysCalendar(){
+  const calendar = document.querySelector('#birthdays-calendar');
+  calendar.innerHTML = '';
+
+  const monthNames = [
+    'Январь','Февраль','Март','Апрель',
+    'Май','Июнь','Июль','Август',
+    'Сентябрь','Октябрь','Ноябрь','Декабрь'
+  ];
+
+  const seasonIcons = [
+    '❄️','❄️','🌷','🌷','🌷','☀️',
+    '☀️','☀️','🍂','🍂','🍂','❄️'
+  ];
+
+  for(let month = 1; month <= 12; month++){
+    const people = birthdays
+      .filter(b => b.month === month)
+      .sort((a,b) => a.day - b.day);
+
+    if(!people.length) continue;
+
+    const section = document.createElement('div');
+    section.className = 'birthday-month';
+
+    const title = document.createElement('h3');
+    title.textContent = seasonIcons[month-1] + ' ' + monthNames[month-1];
+    section.appendChild(title);
+
+    people.forEach(person=>{
+      const item = document.createElement('div');
+      item.className = 'birthday-calendar-item';
+      item.textContent = `${person.day} — ${person.name} ♡`;
+      section.appendChild(item);
+    });
+
+    calendar.appendChild(section);
+  }
+
+  if(!calendar.children.length){
+    calendar.textContent = 'Пока нет добавленных дней рождения ♡';
+  }
+
+  document.querySelector('#birthdays-dialog').showModal();
+}
+
 async function load(){
   const now=new Date();
 const currentMonth=
@@ -1190,6 +1347,19 @@ $('#admin-logout').addEventListener('click',async()=>{await db.auth.signOut();se
     openBookDialog(currentMonthBook);
   }
 });
+  
+const birthdaysDlg = document.querySelector('#birthdays-dialog');
+
+document.querySelector('#close-birthdays').addEventListener('click',()=>{
+  birthdaysDlg.close();
+});
+
+birthdaysDlg.addEventListener('click',e=>{
+  if(e.target === birthdaysDlg){
+    birthdaysDlg.close();
+  }
+});
+
 const bookDlg = $('#book-dialog');
 
 $('#close-book-dialog').addEventListener('click',()=>{
