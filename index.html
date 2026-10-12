@@ -541,11 +541,7 @@ overflow-y:auto;
     outline:none;
     box-shadow:none;
 }
-#birthday-form button:focus-visible{
-    outline:none;
-    box-shadow:0 0 0 3px #f4cbd7;
-}
-  
+
 
 #birthday-admin-list button{
     width:auto;
@@ -563,11 +559,7 @@ overflow-y:auto;
     outline:none;
     box-shadow:none;
 }
-#birthday-admin-list button:focus-visible{
-  outline:2px solid #b65c79;
-  outline-offset:2px;
-  box-shadow:0 0 0 4px #f4cbd7;
-}
+
   #birthday-admin-list > div{
     display:flex;
     align-items:center;
@@ -637,19 +629,16 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
   .grid,.grid2{grid-template-columns:1fr}.book{grid-template-columns:1fr}.vote{justify-content:space-between}
   .card{padding:15px;border-radius:20px}.wrap{padding-inline:12px}.history-item{grid-template-columns:1fr}
 }
-  /* Единый стиль фокуса для всех кнопок */
-button:focus,
-button:focus-visible,
-input[type="file"]::file-selector-button:focus{
-    outline:none;
-    box-shadow:none;
+
+/* Единый нежно-розовый фокус для всех кнопок */
+button:focus-visible {
+  outline: none;
+  border-color: #c96e83;
+  box-shadow: 0 0 0 3px #f7e3e8;
 }
 
-/* Аккуратная розовая подсветка для клавиатуры */
-button:focus-visible{
-    outline:none;
-    box-shadow:0 0 0 3px #f4cbd7;
-}
+</style>
+
 </style>
 </head>
 <body>
