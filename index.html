@@ -305,6 +305,43 @@ button:disabled{cursor:not-allowed;opacity:.6}
     margin-top:16px;
   }
 }
+  .birthdays-widget .birthday-item{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.birthdays-widget .birthday-date{
+  color:#b65f7b;
+  font-size:13px;
+  font-weight:800;
+}
+
+.birthdays-widget .birthday-name{
+  color:var(--text);
+  font-size:15px;
+  font-weight:600;
+}
+
+.birthdays-widget .birthday-all{
+  width:100%;
+  margin-top:14px;
+  padding:11px;
+  border:0;
+  border-radius:12px;
+  background:#f5dfe6;
+  color:#945369;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.birthdays-widget .birthday-empty{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.5;
+}
   #winner-banner{
   cursor:pointer;
   transition:transform .15s ease, box-shadow .15s ease;
@@ -568,6 +605,65 @@ function leaders(){
   if(max===0)return {max:0,items:[]};
   return {max,items:books.filter(b=>counts[b.id]===max)}
 }
+  const birthdays = [
+  {name:'Лиза', day:12, month:10},
+  {name:'Женя', day:28, month:10}
+];
+
+function renderBirthdays(){
+  const widget = document.querySelector('.birthdays-widget');
+  if(!widget) return;
+
+  const now = new Date();
+  const month = now.getMonth() + 1;
+
+  const monthNames = [
+    'января','февраля','марта','апреля',
+    'мая','июня','июля','августа',
+    'сентября','октября','ноября','декабря'
+  ];
+
+  const current = birthdays
+    .filter(b => b.month === month)
+    .sort((a,b) => a.day - b.day);
+
+  widget.innerHTML = '';
+
+  const heading = document.createElement('h3');
+  heading.textContent = '🎂 Дни рождения ♡';
+  widget.appendChild(heading);
+
+  if(!current.length){
+    const empty = document.createElement('div');
+    empty.className = 'birthday-empty';
+    empty.textContent = 'В этом месяце именинниц пока нет ♡';
+    widget.appendChild(empty);
+  }
+
+  current.forEach(b=>{
+    const item = document.createElement('div');
+    item.className = 'birthday-item';
+
+    const date = document.createElement('div');
+    date.className = 'birthday-date';
+    date.textContent = `${b.day} ${monthNames[b.month-1]}`;
+
+    const name = document.createElement('div');
+    name.className = 'birthday-name';
+    name.textContent = b.name + ' ♡';
+
+    item.append(date,name);
+    widget.appendChild(item);
+  });
+
+  const button = document.createElement('button');
+  button.className = 'birthday-all';
+  button.type = 'button';
+  button.textContent = 'Все дни рождения ♡';
+  widget.appendChild(button);
+}
+
+renderBirthdays();
 async function load(){
   const now=new Date();
 const currentMonth=
