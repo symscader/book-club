@@ -1001,6 +1001,8 @@ editButton.addEventListener('click', () => {
   $('#birthday-form button[type="submit"]').textContent =
     'Сохранить изменения ♡';
 
+  $('#birthday-cancel-edit').classList.remove('hidden');
+
   $('#birthday-admin-notice').textContent =
     `Редактируем: ${b.name} ♡`;
 
