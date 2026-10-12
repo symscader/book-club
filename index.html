@@ -400,6 +400,26 @@ justify-content:center;
   outline:none;
 }
 
+.birthdays-modal-close::before,
+.birthdays-modal-close::after{
+  content:"";
+  position:absolute;
+  width:16px;
+  height:2px;
+  background:#945369;
+  border-radius:2px;
+  top:50%;
+  left:50%;
+}
+
+.birthdays-modal-close::before{
+  transform:translate(-50%,-50%) rotate(45deg);
+}
+
+.birthdays-modal-close::after{
+  transform:translate(-50%,-50%) rotate(-45deg);
+}
+
 
 .birthdays-calendar{
   display:grid;
@@ -659,8 +679,8 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
       id="close-birthdays"
       class="birthdays-modal-close"
       type="button"
-      aria-label="Закрыть"
-    >×</button>
+     aria-label="Закрыть"
+></button>
 
     <h2>🎂 Наш календарь дней рождения ♡</h2>
     <p class="birthdays-modal-subtitle">
