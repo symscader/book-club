@@ -270,6 +270,41 @@ button:disabled{cursor:not-allowed;opacity:.6}
 .adminbar{display:flex;gap:8px;flex-wrap:wrap}
 .tag{display:inline-flex;align-items:center;min-height:34px;padding:6px 10px;border-radius:999px;background:#f7e6eb;color:#914f60;font-size:13px;font-weight:800}
 .winner-banner{border:2px solid #ddae82;background:linear-gradient(135deg,#fff7e9,#fffdfb);border-radius:22px;padding:18px;margin-top:16px;text-align:center}
+.birthdays-widget{
+  position:fixed;
+  top:260px;
+  left:calc(50% + 425px);
+  width:250px;
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:#fffaf8;
+  box-shadow:0 10px 30px rgba(92,52,64,.08);
+  z-index:5;
+}
+
+.birthdays-widget h3{
+  margin:0 0 14px;
+  font-size:18px;
+  color:#9c5b70;
+}
+
+.birthdays-widget .birthday-item{
+  padding:9px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.birthdays-widget .birthday-item:last-child{
+  border-bottom:0;
+}
+
+@media(max-width:1350px){
+  .birthdays-widget{
+    position:static;
+    width:100%;
+    margin-top:16px;
+  }
+}
   #winner-banner{
   cursor:pointer;
   transition:transform .15s ease, box-shadow .15s ease;
