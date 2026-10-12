@@ -475,6 +475,56 @@ overflow-y:auto;
   font-size:14px;
   line-height:1.5;
 }
+  .birthdays-admin{
+  margin-top:24px;
+  padding-top:20px;
+  border-top:1px solid var(--line);
+}
+
+.birthdays-admin h3{
+  margin:0 0 6px;
+  color:#a84f70;
+  font-size:20px;
+}
+
+.birthdays-admin-hint{
+  color:var(--muted);
+  font-size:14px;
+  margin:0 0 16px;
+}
+
+#birthday-form{
+  display:grid;
+  gap:12px;
+  max-width:420px;
+}
+
+.birthdays-admin-fields{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.birthdays-admin input,
+.birthdays-admin select{
+  width:100%;
+  min-width:0;
+  min-height:46px;
+  padding:10px 12px;
+  border:1px solid #dfcbd1;
+  border-radius:12px;
+  background:#fff;
+  color:var(--text);
+  font:inherit;
+}
+
+.birthdays-admin button{
+  width:100%;
+}
+
+#birthday-admin-list{
+  margin-top:18px;
+}
   #winner-banner{
   cursor:pointer;
   transition:transform .15s ease, box-shadow .15s ease;
@@ -698,6 +748,63 @@ dialog::backdrop{background:rgba(38,25,30,.35)}
     </p>
 
     <div id="birthdays-calendar" class="birthdays-calendar"></div>
+    <section id="birthdays-admin" class="birthdays-admin hidden">
+
+  <h3>🎀 Управление днями рождения</h3>
+  <p class="birthdays-admin-hint">
+    Здесь можно добавлять и редактировать именинниц ♡
+  </p>
+
+  <form id="birthday-form">
+
+    <input
+      id="birthday-name"
+      type="text"
+      placeholder="Имя участницы"
+      maxlength="100"
+      required
+    >
+
+    <div class="birthdays-admin-fields">
+
+      <input
+        id="birthday-day"
+        type="number"
+        min="1"
+        max="31"
+        placeholder="День"
+        required
+      >
+
+      <select id="birthday-month" required>
+        <option value="">Выбери месяц</option>
+        <option value="1">Январь</option>
+        <option value="2">Февраль</option>
+        <option value="3">Март</option>
+        <option value="4">Апрель</option>
+        <option value="5">Май</option>
+        <option value="6">Июнь</option>
+        <option value="7">Июль</option>
+        <option value="8">Август</option>
+        <option value="9">Сентябрь</option>
+        <option value="10">Октябрь</option>
+        <option value="11">Ноябрь</option>
+        <option value="12">Декабрь</option>
+      </select>
+
+    </div>
+
+    <button class="primary" type="submit">
+      Добавить именинницу ♡
+    </button>
+
+    <div id="birthday-admin-notice" class="notice"></div>
+
+  </form>
+
+  <div id="birthday-admin-list"></div>
+
+</section>
   </div>
 </dialog>
 
@@ -745,6 +852,8 @@ async function checkAdmin(){
 }
 function paintAdmin(){
   $('#admin-panel').classList.toggle('hidden',!isAdmin);
+  $('#birthdays-admin').classList.toggle('hidden', !isAdmin);
+  renderBirthdayAdminList();
   $('#admin-login').classList.toggle('hidden',!!session);
   $('#admin-logout').classList.toggle('hidden',!session);
   $('#admin-logout').textContent=session&&!isAdmin?'Выйти (нет прав админа)':'Выйти из админки'
@@ -758,7 +867,59 @@ function leaders(){
   return {max,items:books.filter(b=>counts[b.id]===max)}
 }
   let birthdays = [];
+function renderBirthdayAdminList(){
+  const list = $('#birthday-admin-list');
+  if(!list) return;
 
+  list.innerHTML = '';
+
+  if(!isAdmin) return;
+
+  const sorted = [...birthdays].sort((a,b) =>
+    a.month - b.month || a.day - b.day
+  );
+
+  sorted.forEach(b => {
+    const row = document.createElement('div');
+    row.className = 'birthday-calendar-item';
+    row.style.display = 'flex';
+    row.style.justifyContent = 'space-between';
+    row.style.alignItems = 'center';
+    row.style.gap = '12px';
+
+    const info = document.createElement('span');
+    info.textContent = `${b.name} — ${String(b.day).padStart(2,'0')}.${String(b.month).padStart(2,'0')}`;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'danger';
+    button.textContent = 'Удалить';
+
+    button.addEventListener('click', async () => {
+      if(!isAdmin) return;
+      if(!confirm(`Удалить день рождения ${b.name}?`)) return;
+
+      const {error} = await db
+        .from('birthdays')
+        .delete()
+        .eq('id', b.id);
+
+      if(error){
+        $('#birthday-admin-notice').textContent =
+          'Ошибка удаления: ' + error.message;
+        return;
+      }
+
+      $('#birthday-admin-notice').textContent =
+        'День рождения удалён ♡';
+
+      await loadBirthdays();
+    });
+
+    row.append(info,button);
+    list.appendChild(row);
+  });
+}
 function renderBirthdays(){
   const widget = document.querySelector('.birthdays-widget');
   if(!widget) return;
@@ -821,7 +982,7 @@ date.textContent = `${seasonEmoji} ${b.day} ${monthNames[b.month-1]}`;
 async function loadBirthdays(){
   const {data,error} = await db
     .from('birthdays')
-    .select('name,day,month')
+    .select('id,name,day,month')
     .order('month',{ascending:true})
     .order('day',{ascending:true});
 
@@ -830,12 +991,54 @@ async function loadBirthdays(){
     return;
   }
 
-  birthdays = data || [];
-  renderBirthdays();
+ birthdays = data || [];
+renderBirthdays();
+renderBirthdayAdminList();
 }
 
 loadBirthdays();
-  
+  $('#birthday-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if (!isAdmin) return;
+
+  const name = $('#birthday-name').value.trim();
+  const day = Number($('#birthday-day').value);
+  const month = Number($('#birthday-month').value);
+  const notice = $('#birthday-admin-notice');
+
+  if (!name || !Number.isInteger(day) || !Number.isInteger(month)) {
+    notice.textContent = 'Заполни все поля ♡';
+    return;
+  }
+
+  const year = 2024;
+  const date = new Date(year, month - 1, day);
+
+  if (
+    month < 1 || month > 12 ||
+    day < 1 ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    notice.textContent = 'Проверь дату рождения ♡';
+    return;
+  }
+
+  const { error } = await db
+    .from('birthdays')
+    .insert({ name, day, month });
+
+  if (error) {
+    notice.textContent = 'Ошибка: ' + error.message;
+    return;
+  }
+
+  notice.textContent = 'Именинница добавлена! ♡';
+  $('#birthday-form').reset();
+
+  await loadBirthdays();
+});
 function openBirthdaysCalendar(){
   const calendar = document.querySelector('#birthdays-calendar');
   calendar.innerHTML = '';
