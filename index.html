@@ -884,6 +884,14 @@ button:focus-visible{
       Добавить именинницу ♡
     </button>
 
+<button
+  id="birthday-cancel-edit"
+  class="soft hidden"
+  type="button"
+>
+  Отменить редактирование ♡
+</button>
+
     <div id="birthday-admin-notice" class="notice"></div>
 
   </form>
@@ -1113,17 +1121,30 @@ renderBirthdayAdminList();
 }
 
 loadBirthdays();
-  $('#birthday-form').addEventListener('submit', async (e) => {
+ 
+let editingBirthdayId = null;
+
+function resetBirthdayEditing(){
+  editingBirthdayId = null;
+  $('#birthday-form').reset();
+  $('#birthday-form button[type="submit"]').textContent =
+    'Добавить именинницу ♡';
+
+  const cancel = $('#birthday-cancel-edit');
+  if(cancel) cancel.classList.add('hidden');
+}
+
+$('#birthday-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  if (!isAdmin) return;
+  if(!isAdmin) return;
 
   const name = $('#birthday-name').value.trim();
   const day = Number($('#birthday-day').value);
   const month = Number($('#birthday-month').value);
   const notice = $('#birthday-admin-notice');
 
-  if (!name || !Number.isInteger(day) || !Number.isInteger(month)) {
+  if(!name || !Number.isInteger(day) || !Number.isInteger(month)){
     notice.textContent = 'Заполни все поля ♡';
     return;
   }
@@ -1131,30 +1152,50 @@ loadBirthdays();
   const year = 2024;
   const date = new Date(year, month - 1, day);
 
-  if (
+  if(
     month < 1 || month > 12 ||
     day < 1 ||
     date.getMonth() !== month - 1 ||
     date.getDate() !== day
-  ) {
+  ){
     notice.textContent = 'Проверь дату рождения ♡';
     return;
   }
 
-  const { error } = await db
-    .from('birthdays')
-    .insert({ name, day, month });
+  const isEditing = editingBirthdayId !== null;
 
-  if (error) {
+  let query = db.from('birthdays');
+
+  if(isEditing){
+    query = query
+      .update({name, day, month})
+      .eq('id', editingBirthdayId);
+  }else{
+    query = query.insert({name, day, month});
+  }
+
+  const {error} = await query;
+
+  if(error){
     notice.textContent = 'Ошибка: ' + error.message;
     return;
   }
 
-  notice.textContent = 'Именинница добавлена! ♡';
-  $('#birthday-form').reset();
+  resetBirthdayEditing();
+
+  notice.textContent = isEditing
+    ? 'Изменения сохранены ♡'
+    : 'Именинница добавлена! ♡';
 
   await loadBirthdays();
 });
+
+$('#birthday-cancel-edit').addEventListener('click', () => {
+  resetBirthdayEditing();
+  $('#birthday-admin-notice').textContent = '';
+});
+
+  
 function openBirthdaysCalendar(){
   const calendar = document.querySelector('#birthdays-calendar');
   calendar.innerHTML = '';
