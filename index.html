@@ -750,10 +750,7 @@ function leaders(){
   if(max===0)return {max:0,items:[]};
   return {max,items:books.filter(b=>counts[b.id]===max)}
 }
-  const birthdays = [
-  {name:'Лиза', day:12, month:10},
-  {name:'Женя', day:28, month:10}
-];
+  let birthdays = [];
 
 function renderBirthdays(){
   const widget = document.querySelector('.birthdays-widget');
@@ -814,7 +811,23 @@ date.textContent = `${seasonEmoji} ${b.day} ${monthNames[b.month-1]}`;
   widget.appendChild(button);
 }
 
-renderBirthdays();
+async function loadBirthdays(){
+  const {data,error} = await db
+    .from('birthdays')
+    .select('name,day,month')
+    .order('month',{ascending:true})
+    .order('day',{ascending:true});
+
+  if(error){
+    console.error('Ошибка загрузки дней рождения:',error);
+    return;
+  }
+
+  birthdays = data || [];
+  renderBirthdays();
+}
+
+loadBirthdays();
   
 function openBirthdaysCalendar(){
   const calendar = document.querySelector('#birthdays-calendar');
