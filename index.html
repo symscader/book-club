@@ -546,7 +546,10 @@ overflow-y:auto;
     outline:none;
     box-shadow:none;
 }
-
+#birthday-admin-list button:focus{
+    outline:none;
+    box-shadow:none;
+}
 #birthday-admin-list button:focus-visible{
     outline:none;
     box-shadow:0 0 0 3px #f4cbd7;
@@ -560,6 +563,20 @@ overflow-y:auto;
 
 #birthday-admin-list{
   margin-top:18px;
+}
+  .birthday-admin-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
+
+#birthday-admin-list .birthday-admin-actions button{
+  width:auto;
+  min-height:34px;
+  padding:7px 12px;
+  font-size:13px;
+  border-radius:10px;
 }
   #winner-banner{
   cursor:pointer;
@@ -903,6 +920,7 @@ function leaders(){
   return {max,items:books.filter(b=>counts[b.id]===max)}
 }
   let birthdays = [];
+  let editingBirthdayId = null;
 function renderBirthdayAdminList(){
   const list = $('#birthday-admin-list');
   if(!list) return;
@@ -925,7 +943,31 @@ function renderBirthdayAdminList(){
 
     const info = document.createElement('span');
     info.textContent = `${b.name} — ${String(b.day).padStart(2,'0')}.${String(b.month).padStart(2,'0')}`;
+const editButton = document.createElement('button');
+editButton.type = 'button';
+editButton.className = 'soft';
+editButton.textContent = 'Изменить';
 
+editButton.addEventListener('click', () => {
+  if (!isAdmin) return;
+
+  editingBirthdayId = b.id;
+
+  $('#birthday-name').value = b.name;
+  $('#birthday-day').value = b.day;
+  $('#birthday-month').value = String(b.month);
+
+  $('#birthday-form button[type="submit"]').textContent =
+    'Сохранить изменения ♡';
+
+  $('#birthday-admin-notice').textContent =
+    `Редактируем: ${b.name} ♡`;
+
+  $('#birthday-form').scrollIntoView({
+    behavior: 'smooth',
+    block: 'center'
+  });
+});
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'danger';
@@ -952,8 +994,13 @@ function renderBirthdayAdminList(){
       await loadBirthdays();
     });
 
-    row.append(info,button);
-    list.appendChild(row);
+    const actions = document.createElement('div');
+actions.className = 'birthday-admin-actions';
+
+actions.append(editButton, button);
+
+row.append(info, actions);
+list.appendChild(row);
   });
 }
 function renderBirthdays(){
