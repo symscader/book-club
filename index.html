@@ -1429,6 +1429,46 @@ function paintTie(){
   lead.items.forEach(b=>{const btn=document.createElement('button');btn.type='button';btn.className='primary';btn.textContent='👑 '+b.title;btn.addEventListener('click',()=>chooseWinner(b.id));actions.append(btn)});
   box.append(h,p,actions)
 }
+  
+async function loadBookRatings(bookIds) {
+  if (!bookIds.length) return {};
+
+  const { data, error } = await db
+    .from('book_ratings')
+    .select('book_id,rating')
+    .in('book_id', bookIds);
+
+  if (error) {
+    console.error('Ошибка загрузки оценок:', error);
+    return {};
+  }
+
+  const grouped = {};
+
+  (data || []).forEach(item => {
+    if (!grouped[item.book_id]) {
+      grouped[item.book_id] = {
+        sum: 0,
+        count: 0
+      };
+    }
+
+    grouped[item.book_id].sum += Number(item.rating);
+    grouped[item.book_id].count++;
+  });
+
+  const result = {};
+
+  Object.entries(grouped).forEach(([id, value]) => {
+    result[id] = {
+      average: value.sum / value.count,
+      count: value.count
+    };
+  });
+
+  return result;
+}
+
 async function renderHistory(){
   if(!historyPolls.length){$('#history').innerHTML='<div class="empty">Пока история только начинается ♡</div>';return}
   const winnerIds=[...new Set(historyPolls.map(p=>p.winner_book_id).filter(Boolean))];
