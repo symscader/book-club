@@ -2011,6 +2011,32 @@ function ratingCountText(count) {
   return `${count} оценок`;
 }
 
+$('#admin-rating-book').addEventListener('change', () => {
+  const select = $('#admin-rating-book');
+  const controls = $('#admin-rating-controls');
+  const status = $('#admin-rating-status');
+  const button = $('#admin-rating-toggle');
+
+  const option = select.selectedOptions[0];
+
+  if (!select.value || !option) {
+    controls.classList.add('hidden');
+    return;
+  }
+
+  const enabled = option.dataset.enabled === 'true';
+
+  status.textContent = enabled
+    ? 'Оценивание открыто ♡'
+    : 'Оценивание закрыто ♡';
+
+  button.textContent = enabled
+    ? 'Закрыть оценки'
+    : 'Открыть оценки';
+
+  controls.classList.remove('hidden');
+});
+
 async function renderAdminRatingBooks() {
   const select = $('#admin-rating-book');
   if (!select || !isAdmin) return;
