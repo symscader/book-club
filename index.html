@@ -1859,7 +1859,29 @@ async function loadMyBookRating() {
 }
 
 /* Проверяем оценку после ввода ника */
-$('#rating-voter').addEventListener('change', loadMyBookRating);
+
+/* Автоматическая проверка оценки при вводе ника */
+let ratingSearchTimer;
+
+$('#rating-voter').addEventListener('input', () => {
+  clearTimeout(ratingSearchTimer);
+
+  const name = $('#rating-voter').value.trim();
+
+  if (name.length < 2) {
+    selectedBookRating = 0;
+    updateRatingStars();
+    $('#rating-notice').textContent = '';
+    $('#rating-form button[type="submit"]').textContent =
+      'Сохранить оценку ♡';
+    return;
+  }
+
+  ratingSearchTimer = setTimeout(() => {
+    loadMyBookRating();
+  }, 400);
+});
+
 
 function openRatingDialog(book) {
   ratingBookId = book.id;
