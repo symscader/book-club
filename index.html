@@ -1945,6 +1945,21 @@ $('#rating-form').addEventListener('submit', async (event) => {
   }
 });
 
+function ratingCountText(count) {
+  const n = Math.abs(count);
+  const lastTwo = n % 100;
+  const last = n % 10;
+
+  if (lastTwo >= 11 && lastTwo <= 14) {
+    return `${count} оценок`;
+  }
+
+  if (last === 1) return `${count} оценка`;
+  if (last >= 2 && last <= 4) return `${count} оценки`;
+
+  return `${count} оценок`;
+}
+
   
 async function renderHistory(){
   if(!historyPolls.length){$('#history').innerHTML='<div class="empty">Пока история только начинается ♡</div>';return}
@@ -1968,7 +1983,7 @@ if (ratingInfo) {
   ratingEl.className = 'history-rating';
   ratingEl.textContent =
     `⭐ ${ratingInfo.average.toFixed(2).replace('.', ',')} / 5 · ` +
-    `${ratingInfo.count} оценок`;
+    ratingCountText(ratingInfo.count);
   info.append(ratingEl);
 }
     
