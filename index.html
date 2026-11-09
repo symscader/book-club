@@ -2215,6 +2215,72 @@ $('#admin-rating-toggle').addEventListener('click', async () => {
   }
 });
 
+function syncRatingPicker() {
+  const select = $('#admin-rating-book');
+  const label = $('#rating-picker-label');
+  const list = $('#rating-picker-options');
+
+  if (!select || !label || !list) return;
+
+  const selected = select.selectedOptions[0];
+
+  label.textContent = select.value && selected
+    ? selected.textContent
+    : 'Выбери книгу ♡';
+
+  list.innerHTML = '';
+
+  [...select.options].forEach(option => {
+    if (!option.value) return;
+
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'rating-picker-option';
+    item.textContent = option.textContent;
+    item.setAttribute(
+      'aria-selected',
+      String(option.value === select.value)
+    );
+
+    item.addEventListener('click', () => {
+      select.value = option.value;
+      select.dispatchEvent(new Event('change'));
+
+      syncRatingPicker();
+      closeRatingPicker();
+    });
+
+    list.append(item);
+  });
+}
+
+function closeRatingPicker() {
+  $('#rating-picker-options').classList.add('hidden');
+  $('#rating-picker-button').setAttribute('aria-expanded', 'false');
+}
+
+$('#rating-picker-button').addEventListener('click', () => {
+  const list = $('#rating-picker-options');
+  const button = $('#rating-picker-button');
+
+  const willOpen = list.classList.contains('hidden');
+
+  list.classList.toggle('hidden', !willOpen);
+  button.setAttribute('aria-expanded', String(willOpen));
+});
+
+document.addEventListener('click', event => {
+  if (!event.target.closest('#rating-book-picker')) {
+    closeRatingPicker();
+  }
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    closeRatingPicker();
+  }
+});
+
 async function renderAdminRatingBooks() {
   const select = $('#admin-rating-book');
   if (!select || !isAdmin) return;
@@ -2261,6 +2327,7 @@ select.innerHTML = '<option value="">Выбери книгу ♡</option>';
   if ([...select.options].some(o => o.value === previousBookId)) {
     select.value = previousBookId;
   }
+  syncRatingPicker();
 }
 
   
