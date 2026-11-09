@@ -1814,6 +1814,53 @@ renderRatingStars();
 /* Открытие окна оценки книги */
 let ratingBookId = null;
 
+/* Поиск ранее сохранённой оценки */
+async function loadMyBookRating() {
+  const name = $('#rating-voter').value.trim();
+  const notice = $('#rating-notice');
+  const submitButton = $('#rating-form button[type="submit"]');
+
+  if (!ratingBookId || !name) return;
+
+  const bookId = ratingBookId;
+  const requestedName = name.toLowerCase();
+
+  const { data, error } = await db
+    .from('book_ratings')
+    .select('rating')
+    .eq('book_id', bookId)
+    .eq('voter_key', requestedName)
+    .maybeSingle();
+
+  // Не применяем устаревший ответ, если ник или книга изменились.
+  if (ratingBookId !== bookId ||
+      $('#rating-voter').value.trim().toLowerCase() !== requestedName) {
+    return;
+  }
+
+  if (error) {
+    console.error('Ошибка загрузки личной оценки:', error);
+    notice.textContent = 'Не удалось проверить прежнюю оценку ♡';
+    return;
+  }
+
+  if (data) {
+    selectedBookRating = Number(data.rating);
+    updateRatingStars();
+    notice.textContent =
+      `Ты уже оценивала эту книгу на ${String(data.rating).replace('.', ',')} / 5 ♡`;
+    submitButton.textContent = 'Обновить оценку ♡';
+  } else {
+    selectedBookRating = 0;
+    updateRatingStars();
+    notice.textContent = '';
+    submitButton.textContent = 'Сохранить оценку ♡';
+  }
+}
+
+/* Проверяем оценку после ввода ника */
+$('#rating-voter').addEventListener('change', loadMyBookRating);
+
 function openRatingDialog(book) {
   ratingBookId = book.id;
   selectedBookRating = 0;
