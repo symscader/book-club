@@ -674,19 +674,34 @@ button:focus-visible {
   color: #816b74;
 }
 
+
 .rating-close {
   position: absolute;
   top: 15px;
   right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
+  min-height: 0;
+  padding: 0;
   border: none;
   border-radius: 50%;
   background: #f6e2e9;
   color: #98546d;
+  font-family: Arial, sans-serif;
   font-size: 26px;
+  font-weight: 400;
+  line-height: 1;
   cursor: pointer;
 }
+
+.rating-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px #f7e3e8;
+}
+
 
 #rating-form {
   display: flex;
