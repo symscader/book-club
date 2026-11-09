@@ -2011,6 +2011,56 @@ function ratingCountText(count) {
   return `${count} оценок`;
 }
 
+async function renderAdminRatingBooks() {
+  const select = $('#admin-rating-book');
+  if (!select || !isAdmin) return;
+
+  const previousBookId = select.value;
+
+  select.innerHTML = '<option value="">Выбери книгу ♡</option>';
+
+  const pollsWithWinners = historyPolls.filter(
+    p => p.winner_book_id
+  );
+
+  if (!pollsWithWinners.length) return;
+
+  const winnerIds = pollsWithWinners.map(
+    p => p.winner_book_id
+  );
+
+  const { data, error } = await db
+    .from('books')
+    .select('id, title, rating_enabled')
+    .in('id', winnerIds);
+
+  if (error) {
+    console.error('Ошибка загрузки книг для оценивания:', error);
+    $('#admin-rating-notice').textContent =
+      'Не удалось загрузить книги ♡';
+    return;
+  }
+
+  pollsWithWinners.forEach(p => {
+    const book = (data || []).find(
+      b => b.id === p.winner_book_id
+    );
+
+    if (!book) return;
+
+    const option = document.createElement('option');
+    option.value = book.id;
+    option.textContent = `${p.title} — ${book.title}`;
+    option.dataset.enabled = String(book.rating_enabled);
+
+    select.append(option);
+  });
+
+  if ([...select.options].some(o => o.value === previousBookId)) {
+    select.value = previousBookId;
+  }
+}
+
   
 async function renderHistory(){
   if(!historyPolls.length){$('#history').innerHTML='<div class="empty">Пока история только начинается ♡</div>';return}
@@ -2057,6 +2107,9 @@ if (b.rating_enabled === true) {
 row.append(month,info);
 $('#history').append(row);
   })
+  if (isAdmin) {
+  await renderAdminRatingBooks();
+}
 }
 
 $('#load-my-votes').addEventListener('click',()=>{
