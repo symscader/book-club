@@ -1987,17 +1987,21 @@ if (ratingInfo) {
   info.append(ratingEl);
 }
     
-const rateButton = document.createElement('button');
-rateButton.type = 'button';
-rateButton.className = 'history-rate-button';
-rateButton.textContent = '☆ Оценить';
 
-rateButton.addEventListener('click', (event) => {
-  event.stopPropagation();
-  openRatingDialog(b);
-});
+if (b.rating_enabled === true) {
+  const rateButton = document.createElement('button');
+  rateButton.type = 'button';
+  rateButton.className = 'history-rate-button';
+  rateButton.textContent = '☆ Оценить';
 
-info.append(rateButton);
+  rateButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    openRatingDialog(b);
+  });
+
+  info.append(rateButton);
+}
+
 
 row.append(month,info);
 $('#history').append(row);
