@@ -854,6 +854,30 @@ button:focus-visible {
   box-shadow: 0 0 0 3px #f7e3e8;
 }
 
+/* Точное визуальное выравнивание звёздочек */
+.rating-stars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.rating-stars .rating-star {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  line-height: 1;
+}
+
+.rating-star-symbol {
+  display: block;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
 </style>
 
 </head>
@@ -1831,7 +1855,7 @@ if (ratingInfo) {
 const rateButton = document.createElement('button');
 rateButton.type = 'button';
 rateButton.className = 'history-rate-button';
-rateButton.textContent = '☆ Оценить ♡';
+rateButton.textContent = '☆ Оценить';
 
 rateButton.addEventListener('click', (event) => {
   event.stopPropagation();
