@@ -2017,8 +2017,6 @@ async function renderAdminRatingBooks() {
 
   const previousBookId = select.value;
 
-  select.innerHTML = '<option value="">Выбери книгу ♡</option>';
-
   const pollsWithWinners = historyPolls.filter(
     p => p.winner_book_id
   );
@@ -2040,7 +2038,7 @@ async function renderAdminRatingBooks() {
       'Не удалось загрузить книги ♡';
     return;
   }
-
+select.innerHTML = '<option value="">Выбери книгу ♡</option>';
   pollsWithWinners.forEach(p => {
     const book = (data || []).find(
       b => b.id === p.winner_book_id
