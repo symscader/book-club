@@ -607,7 +607,17 @@ overflow-y:auto;
 .tie h3{margin:0 0 8px}
 .tie-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .history{display:grid;gap:10px}
-.history-item{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:12px;padding:14px;border-radius:18px;background:#fffaf8;border:1px solid var(--line)}
+
+.history-item {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #fffaf8;
+  border: 1px solid var(--line);
+}
+
   .history-item{
   cursor:pointer;
   transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
