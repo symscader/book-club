@@ -716,17 +716,26 @@ button:focus-visible {
   flex-wrap: wrap;
 }
 
+
 .rating-stars button {
-  width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
   height: 48px;
-  padding: 5px;
-  border: none;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 1px solid transparent;
   border-radius: 12px;
   background: transparent;
   color: #d8c6cd;
-  font-size: 34px;
+  font-size: 38px;
+  line-height: 1;
   cursor: pointer;
+  flex: 0 0 44px;
 }
+
 
 .rating-value {
   text-align: center;
@@ -783,20 +792,26 @@ button:focus-visible {
 }
 
 /* Кнопка оценки на исторической полке */
+
 .history-rate-button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: auto;
-  margin-top: 10px;
-  padding: 9px 15px;
+  min-height: 0;
+  margin-top: 6px;
+  padding: 5px 10px;
   border: 1px solid #eacbd5;
-  border-radius: 12px;
+  border-radius: 9px;
   background: #f6e2e9;
   color: #98546d;
   font: inherit;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
   cursor: pointer;
 }
+
 
 .history-rate-button:hover {
   background: #efd4de;
@@ -805,6 +820,22 @@ button:focus-visible {
 .history-rate-button:focus-visible {
   outline: none;
   border-color: #c96e83;
+  box-shadow: 0 0 0 3px #f7e3e8;
+}
+
+/* Компактная подсветка звёзд */
+.rating-star-symbol {
+  display: block;
+  line-height: 1;
+}
+
+.rating-stars .rating-star:hover {
+  background: #f9eaf0;
+}
+
+.rating-stars .rating-star:focus-visible {
+  outline: none;
+  border-color: #eacbd5;
   box-shadow: 0 0 0 3px #f7e3e8;
 }
 
@@ -1785,7 +1816,7 @@ if (ratingInfo) {
 const rateButton = document.createElement('button');
 rateButton.type = 'button';
 rateButton.className = 'history-rate-button';
-rateButton.textContent = '⭐ Оценить книгу ♡';
+rateButton.textContent = '☆ Оценить ♡';
 
 rateButton.addEventListener('click', (event) => {
   event.stopPropagation();
