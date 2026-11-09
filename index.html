@@ -2037,6 +2037,57 @@ $('#admin-rating-book').addEventListener('change', () => {
   controls.classList.remove('hidden');
 });
 
+$('#admin-rating-toggle').addEventListener('click', async () => {
+  const select = $('#admin-rating-book');
+  const button = $('#admin-rating-toggle');
+  const notice = $('#admin-rating-notice');
+
+  const bookId = select.value;
+  const option = select.selectedOptions[0];
+
+  if (!isAdmin || !bookId || !option) return;
+
+  const enabled = option.dataset.enabled === 'true';
+
+  button.disabled = true;
+  button.textContent = 'Сохраняем... ♡';
+  notice.textContent = '';
+
+  try {
+    const { error } = await db.rpc('set_book_rating_enabled', {
+      p_book_id: bookId,
+      p_enabled: !enabled
+    });
+
+    if (error) throw error;
+
+    option.dataset.enabled = String(!enabled);
+
+    // Обновляем книжную полку и список.
+    await renderHistory();
+
+    // Восстанавливаем выбранную книгу и её статус.
+    select.value = bookId;
+    select.dispatchEvent(new Event('change'));
+
+    notice.textContent = !enabled
+      ? 'Оценивание открыто ♡'
+      : 'Оценивание закрыто ♡';
+
+  } catch (error) {
+    console.error('Ошибка управления оцениванием:', error);
+    notice.textContent =
+      'Не удалось изменить состояние оценивания ♡';
+  } finally {
+    button.disabled = false;
+    if (button.textContent === 'Сохраняем... ♡') {
+      button.textContent = enabled
+        ? 'Закрыть оценки'
+        : 'Открыть оценки';
+    }
+  }
+});
+
 async function renderAdminRatingBooks() {
   const select = $('#admin-rating-book');
   if (!select || !isAdmin) return;
