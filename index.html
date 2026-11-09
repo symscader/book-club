@@ -878,6 +878,12 @@ button:focus-visible {
   transform: translateY(-1px);
 }
 
+/* Кнопка во время сохранения оценки */
+.rating-submit:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 </style>
 
 </head>
@@ -1823,6 +1829,51 @@ function openRatingDialog(book) {
 /* Закрытие окна */
 $('#rating-close').addEventListener('click', () => {
   $('#rating-dialog').close();
+});
+
+/* Сохранение оценки книги */
+$('#rating-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const name = $('#rating-voter').value.trim();
+  const notice = $('#rating-notice');
+  const submitButton = $('#rating-form button[type="submit"]');
+
+  if (name.length < 2 || name.length > 60) {
+    notice.textContent = 'Укажи имя от 2 до 60 символов ♡';
+    return;
+  }
+
+  if (!ratingBookId || selectedBookRating === 0) {
+    notice.textContent = 'Сначала выбери оценку ♡';
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.textContent = 'Сохраняем... ♡';
+  notice.textContent = '';
+
+  try {
+    const { error } = await db.rpc('save_book_rating', {
+      p_book_id: ratingBookId,
+      p_voter_name: name,
+      p_rating: selectedBookRating
+    });
+
+    if (error) throw error;
+
+    notice.textContent = 'Твоя оценка сохранена ♡';
+
+    await renderHistory();
+
+  } catch (error) {
+    console.error('Ошибка сохранения оценки:', error);
+    notice.textContent =
+      'Не получилось сохранить оценку. Попробуй ещё раз ♡';
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = 'Сохранить оценку ♡';
+  }
 });
 
   
