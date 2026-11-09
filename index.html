@@ -944,11 +944,25 @@ button:focus-visible {
   <div id="tie-box" class="tie hidden"></div>
 </div>
 
+
 <div id="admin-ratings">
   <h3>Оценивание книг ⭐</h3>
   <p class="tiny">Открывай оценивание после завершения чтения книги ♡</p>
-  <div id="admin-ratings-list"></div>
+
+  <select id="admin-rating-book">
+    <option value="">Выбери книгу ♡</option>
+  </select>
+
+  <div id="admin-rating-controls" class="hidden">
+    <p id="admin-rating-status" class="tiny"></p>
+    <button id="admin-rating-toggle" class="soft" type="button">
+      Открыть оценки
+    </button>
+  </div>
+
+  <p id="admin-rating-notice" class="tiny" role="status"></p>
 </div>
+
 
 <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
 
