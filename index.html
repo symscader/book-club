@@ -980,9 +980,34 @@ button:focus-visible {
   <h3>Оценивание книг ⭐</h3>
   <p class="tiny">Открывай оценивание после завершения чтения книги ♡</p>
 
-  <select id="admin-rating-book">
+  
+<div class="rating-book-picker" id="rating-book-picker">
+
+  <select id="admin-rating-book" class="hidden">
     <option value="">Выбери книгу ♡</option>
   </select>
+
+  <button
+    id="rating-picker-button"
+    class="rating-picker-button"
+    type="button"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls="rating-picker-options"
+  >
+    <span id="rating-picker-label">Выбери книгу ♡</span>
+    <span class="rating-picker-arrow" aria-hidden="true">⌄</span>
+  </button>
+
+  <div
+    id="rating-picker-options"
+    class="rating-picker-options hidden"
+    role="listbox"
+    aria-label="Книги-победители"
+  ></div>
+
+</div>
+
 
   <div id="admin-rating-controls" class="hidden">
     <p id="admin-rating-status" class="tiny"></p>
