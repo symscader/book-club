@@ -643,9 +643,124 @@ button:focus-visible {
   box-shadow: 0 0 0 3px #f7e3e8;
 }
 
+/* Окно оценки книги */
+.rating-dialog {
+  width: min(440px, calc(100% - 28px));
+  max-height: 90vh;
+  border: 1px solid #ead5dc;
+  border-radius: 24px;
+  padding: 0;
+  background: #fffafa;
+  color: #59434b;
+  box-shadow: 0 18px 55px #57384730;
+}
+
+.rating-dialog::backdrop {
+  background: #30212a80;
+}
+
+.rating-dialog-inner {
+  position: relative;
+  padding: 28px;
+}
+
+.rating-dialog h2 {
+  margin: 0 40px 8px 0;
+  color: #a95776;
+}
+
+.rating-book-title {
+  margin-bottom: 24px;
+  color: #816b74;
+}
+
+.rating-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #f6e2e9;
+  color: #98546d;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+#rating-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#rating-form label {
+  font-weight: 600;
+  color: #8e5269;
+}
+
+#rating-voter {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #e5cbd4;
+  border-radius: 13px;
+  padding: 12px;
+  background: white;
+  font: inherit;
+}
+
+.rating-stars {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.rating-stars button {
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #d8c6cd;
+  font-size: 34px;
+  cursor: pointer;
+}
+
+.rating-value {
+  text-align: center;
+  color: #a95776;
+  font-weight: 600;
+}
+
+.rating-submit {
+  width: 100%;
+  border: none;
+  border-radius: 13px;
+  padding: 13px;
+  background: #bf7088;
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rating-notice {
+  margin: 0;
+  color: #a95776;
+  font-size: 13px;
+}
+
+/* Единый мягкий фокус без чёрных рамок */
+.rating-dialog button:focus-visible,
+#rating-voter:focus-visible {
+  outline: none;
+  border-color: #c96e83;
+  box-shadow: 0 0 0 3px #f7e3e8;
+}
 </style>
 
-</style>
 </head>
 <body>
 <main class="wrap">
@@ -923,6 +1038,49 @@ button:focus-visible {
     </div>
   </div>
 </dialog>
+  
+<!-- Окно оценки прочитанной книги -->
+<dialog id="rating-dialog" class="rating-dialog">
+  <div class="rating-dialog-inner">
+    <button
+      type="button"
+      id="rating-close"
+      class="rating-close"
+      aria-label="Закрыть окно"
+    >×</button>
+
+    <h2>Оцени книгу ♡</h2>
+    <p id="rating-book-title" class="rating-book-title"></p>
+
+    <form id="rating-form">
+      <label for="rating-voter">Твоё имя / ник</label>
+      <input
+        id="rating-voter"
+        type="text"
+        maxlength="60"
+        placeholder="Как тебя зовут? ♡"
+        required
+      >
+
+      <label>Твоя оценка</label>
+      <div id="rating-stars" class="rating-stars"
+           role="group" aria-label="Оценка книги">
+      </div>
+
+      <p id="rating-value" class="rating-value">
+        Выбери оценку от 0,5 до 5 ♡
+      </p>
+
+      <button type="submit" class="rating-submit">
+        Сохранить оценку ♡
+      </button>
+
+      <p id="rating-notice" class="rating-notice"
+         role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</dialog>
+
   <script>
 (() => {
 const $=s=>document.querySelector(s);
