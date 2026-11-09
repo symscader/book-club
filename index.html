@@ -759,6 +759,29 @@ button:focus-visible {
   border-color: #c96e83;
   box-shadow: 0 0 0 3px #f7e3e8;
 }
+  
+/* Звёзды с заполнением по половинкам */
+.rating-star-symbol {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    #d4a044 var(--star-fill, 0%),
+    #d8c6cd var(--star-fill, 0%)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.rating-star:hover {
+  background: #f9eaf0;
+}
+
+.rating-star:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px #f7e3e8;
+}
+
 </style>
 
 </head>
@@ -1633,6 +1656,59 @@ async function loadBookRatings(bookIds) {
   return result;
 }
 
+/* Выбор оценки книги */
+let selectedBookRating = 0;
+
+function renderRatingStars() {
+  const container = $('#rating-stars');
+  container.innerHTML = '';
+
+  for (let star = 1; star <= 5; star++) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'rating-star';
+    button.setAttribute('aria-label', `${star} звезда`);
+
+    const symbol = document.createElement('span');
+    symbol.className = 'rating-star-symbol';
+    symbol.textContent = '★';
+
+    button.append(symbol);
+
+    button.addEventListener('click', (event) => {
+      const rect = button.getBoundingClientRect();
+      const isHalf = event.clientX - rect.left < rect.width / 2;
+
+      selectedBookRating = isHalf ? star - 0.5 : star;
+      updateRatingStars();
+    });
+
+    container.append(button);
+  }
+
+  updateRatingStars();
+}
+
+function updateRatingStars() {
+  document.querySelectorAll('.rating-star').forEach((button, index) => {
+    const value = index + 1;
+    const fill = Math.max(0, Math.min(1, selectedBookRating - (value - 1)));
+
+    button.style.setProperty('--star-fill', `${fill * 100}%`);
+    button.setAttribute(
+      'aria-label',
+      `Оценка ${value - 0.5} или ${value} из 5`
+    );
+  });
+
+  $('#rating-value').textContent = selectedBookRating
+    ? `Твоя оценка: ${String(selectedBookRating).replace('.', ',')} / 5 ♡`
+    : 'Выбери оценку от 0,5 до 5 ♡';
+}
+
+renderRatingStars();
+
+  
 async function renderHistory(){
   if(!historyPolls.length){$('#history').innerHTML='<div class="empty">Пока история только начинается ♡</div>';return}
   const winnerIds=[...new Set(historyPolls.map(p=>p.winner_book_id).filter(Boolean))];
