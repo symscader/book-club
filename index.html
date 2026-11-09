@@ -954,16 +954,23 @@ button:focus-visible {
   box-shadow: 0 0 0 3px #f7e3e8;
 }
 
+
 .rating-picker-arrow {
+  display: block;
   flex-shrink: 0;
-  font-size: 25px;
-  line-height: 1;
-  transition: transform .2s;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-right: 2px solid #86576a;
+  border-bottom: 2px solid #86576a;
+  transform: rotate(45deg);
+  transition: transform .2s ease;
 }
 
 .rating-picker-button[aria-expanded="true"] .rating-picker-arrow {
-  transform: rotate(180deg);
+  transform: rotate(225deg);
 }
+
 
 .rating-picker-options {
   position: absolute;
@@ -1091,7 +1098,7 @@ button:focus-visible {
     aria-controls="rating-picker-options"
   >
     <span id="rating-picker-label">Выбери книгу ♡</span>
-    <span class="rating-picker-arrow" aria-hidden="true">⌄</span>
+    <span class="rating-picker-arrow" aria-hidden="true"></span>
   </button>
 
   <div
